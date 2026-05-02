@@ -43,7 +43,8 @@ export default function Login() {
     return true;
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (e) => {
+    e && e.preventDefault();
     setErrorMessage("");
     if (!validateSignupInputs()) return;
 
@@ -68,6 +69,7 @@ export default function Login() {
             subscription: data.savedUser.subscription ? true : false,
           }),
         );
+        toast.success(data.message || "Bienvenue !");
         setFirstName(null);
         setLastName(null);
         setEmail(null);
@@ -85,7 +87,8 @@ export default function Login() {
     }
   };
 
-  const handleSignin = async () => {
+  const handleSignin = async (e) => {
+    e && e.preventDefault();
     setErrorMessage("");
     if (!validateLoginInputs()) return;
 
@@ -110,6 +113,7 @@ export default function Login() {
             subscription: data.foundUser.subscription ? true : false,
           }),
         );
+        toast.success(data.message || "Bienvenue !");
         setEmail(null);
         setPassword(null);
       } else {
@@ -125,6 +129,10 @@ export default function Login() {
   };
 
   const handleKeyDown = (e, nextField) => {
+    if (e.key === "Enter" && !nextField) {
+      e.preventDefault();
+      isSignup ? handleSignup() : handleSignin();
+    }
     if (e.key === "Enter") {
       e.preventDefault();
 
@@ -135,7 +143,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col max-h-[100vh] max-w-[100vw]">
+    <div className="flex flex-col">
       {isLoading && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center backdrop-blur-md rounded-3xl">
           <div className="w-16 h-16 border-4 border-t-primary border-white/20 rounded-full animate-spin mb-4"></div>
@@ -146,20 +154,25 @@ export default function Login() {
         </div>
       )}
       <div className="flex flex-col justify-center items-center md:flex-row md:justify-evenly gap-8 p-4">
-        <div className="flex h-full w-[500px] m-12 p-6 bg-primary rounded-xl flex-col">
+        <form
+          onSubmit={isSignup ? handleSignup : handleSignin}
+          className="flex h-full w-3/4 md:w-80 m-12 p-6 bg-primary rounded-xl flex-col"
+        >
           {isSignup && (
             <>
               <input
-                className="p-3 border-b-2 rounded-lg mt-3 mb-3 outline-none text-secondary focus:border-secondary transition-colors"
+                className="p-3 text-base border-b-2 rounded-lg mt-3 mb-3 w-full outline-none text-secondary focus:border-secondary transition-colors"
                 placeholder="Prénom"
                 type="text"
                 enterKeyHint="next"
                 onChange={(e) => setFirstName(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
                 value={firstName}
+                autoCapitalize="words"
+                autoCorrect="off"
               ></input>
               <input
-                className="p-3 border-b-2 rounded-lg mt-3 mb-3 outline-none text-secondary focus:border-secondary transition-colors"
+                className="p-3 text-base border-b-2 rounded-lg mt-3 mb-3 outline-none text-secondary focus:border-secondary transition-colors"
                 placeholder="Nom de famille"
                 type="text"
                 enterKeyHint="next"
@@ -167,11 +180,13 @@ export default function Login() {
                 onKeyDown={(e) => handleKeyDown(e, emailRef)}
                 onChange={(e) => setLastName(e.target.value)}
                 value={lastName}
+                autoCapitalize="words"
+                autoCorrect="off"
               ></input>
             </>
           )}
           <input
-            className="p-3 border-b-2 rounded-lg mt-3 mb-3 outline-none text-secondary focus:border-secondary transition-colors"
+            className="p-3 text-baseborder-b-2 rounded-lg w-full mt-3 mb-3 outline-none text-secondary focus:border-secondary transition-colors"
             placeholder="Adresse e-mail"
             inputMode="email"
             enterKeyHint="next"
@@ -179,16 +194,20 @@ export default function Login() {
             onKeyDown={(e) => handleKeyDown(e, passwordRef)}
             onChange={(e) => setEmail(e.target.value)}
             value={email}
+            autoCorrect="off"
+            autoCapitalize="none"
           ></input>
           <div className="flex flex-row items-center bg-white rounded-lg  mt-3 mb-3 p-3  justify-between">
             <input
-              className=" rounded-lg outline-none focus:border-secondary transition-colors border-b-2 flex-1 text-secondary"
+              className="text-base rounded-lg outline-none focus:border-secondary transition-colors border-b-2 flex-1 text-secondary"
               placeholder="Mot de passe"
               type={isPasswordVisible ? "text" : "password"}
               enterKeyHint="go"
               ref={passwordRef}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, null)}
               value={password}
+              autoCorrect="off"
             ></input>
             {isPasswordVisible ? (
               <EyeOff
@@ -208,9 +227,9 @@ export default function Login() {
             <p className="text-destructive text-sm mt-2">{errorMessage}</p>
           )}
           {isSignup ? (
-            <>
+            <div className="flex flex-col gap-4 justify-center items-center">
               <button
-                onClick={() => handleSignup()}
+                type="submit"
                 className="p-3 mt-6 bg-secondary rounded-full"
               >
                 <p className="text-primaryLight">Je m'inscris !</p>
@@ -218,14 +237,15 @@ export default function Login() {
               <button
                 onClick={() => setIsSignup(false)}
                 className="p-3 mt-6 bg-secondary rounded-full"
+                type="button"
               >
                 <p className="text-primaryLight">J'ai déjà un compte</p>
               </button>
-            </>
+            </div>
           ) : (
             <>
               <button
-                onClick={() => handleSignin()}
+                type="submit"
                 className="p-3 mt-6 bg-secondary rounded-full"
               >
                 <p className="text-primaryLight">Je me connecte !</p>
@@ -233,12 +253,13 @@ export default function Login() {
               <button
                 onClick={() => setIsSignup(true)}
                 className="p-3 mt-6 bg-secondary rounded-full"
+                type="button"
               >
                 <p className="text-primaryLight">Je n'ai pas de compte</p>
               </button>
             </>
           )}
-        </div>
+        </form>
       </div>
     </div>
   );
