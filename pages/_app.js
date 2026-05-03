@@ -29,7 +29,7 @@ function App({ Component, pageProps }) {
       <Provider store={store}>
         <PersistGate persistor={persistor}>
           <Head>
-            <title>TemplateApp</title>
+            <title>📆 RésaFacile</title>
 
             <link rel="apple-touch-icon" sizes="180x180" href="/icon.png" />
 
@@ -42,7 +42,7 @@ function App({ Component, pageProps }) {
               content="black-translucent"
             />
 
-            <meta name="apple-mobile-web-app-title" content="TemplateApp" />
+            <meta name="apple-mobile-web-app-title" content="RésaFacile" />
           </Head>
           <ToastContainer />
           <Component {...pageProps} />
