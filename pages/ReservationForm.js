@@ -1,20 +1,25 @@
 import { useState, useEffect, useRef } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { capitalize, colors } from "../components/utils";
 
 import { useDispatch } from "react-redux";
+import { bookATable } from "../reducers/bookings";
 
 import { Eye, EyeOff } from "lucide-react";
 
-export default function ReservationForm() {
+export default function ReservationForm({ selectedRestaurant }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("+33");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [time, setTime] = useState(
-    new Date().toISOString().split("T")[1].slice(0, 5),
+  const [date, setDate] = useState(
+    new Date().toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }),
   );
+  const [time, setTime] = useState("");
   const [nbPax, setNbPax] = useState(2);
   const [occasion, setOccasion] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -31,8 +36,19 @@ export default function ReservationForm() {
   const dispatch = useDispatch();
 
   const validateBookingInputs = () => {
-    if (!firstName || !lastName || !email || !phoneNumber) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !phoneNumber ||
+      !date ||
+      !time ||
+      !nbPax
+    ) {
       setErrorMessage("Tous les champs doivent être remplis.");
+      return false;
+    } else if (!selectedRestaurant) {
+      setErrorMessage("Veuillez sélectionner un restaurant.");
       return false;
     }
     return true;
@@ -43,20 +59,30 @@ export default function ReservationForm() {
     setLastName("");
     setEmail("");
     setPhoneNumber("");
-    setDate(new Date().toISOString().split("T")[0]);
+    setDate(
+      new Date().toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
+    );
+    setTime("");
     setNbPax(2);
     setOccasion("");
   };
 
-  const handleBooking = async (e) => {
+  const handleBooking = async (e, restaurantId) => {
     e && e.preventDefault();
     setErrorMessage("");
     if (!validateBookingInputs()) return;
 
     try {
       setIsLoading(true);
+
+      const dateTime = `${date.split("/").reverse().join("-")}T${time}`;
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/new`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/new/${restaurantId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -65,7 +91,7 @@ export default function ReservationForm() {
             lastName,
             email,
             phoneNumber,
-            date,
+            dateTime,
             nbPax,
             occasion,
           }),
@@ -74,14 +100,7 @@ export default function ReservationForm() {
 
       const data = await response.json();
       if (data.result) {
-        dispatch(
-          bookATable({
-            customer: data.savedBooking.customer,
-            date: data.savedBooking.date,
-            nbPax: data.savedBooking.nbPax,
-            occasion: data.savedBooking.occasion,
-          }),
-        );
+        dispatch(bookATable(data.savedBooking));
         toast.success(data.message || "Réservation enregistrée !");
         resetInputs();
       } else {
@@ -101,7 +120,7 @@ export default function ReservationForm() {
   const handleKeyDown = (e, nextField) => {
     if (e.key === "Enter" && !nextField) {
       e.preventDefault();
-      isSignup ? handleSignup() : handleSignin();
+      handleBooking(e, selectedRestaurant._id);
     }
     if (e.key === "Enter") {
       e.preventDefault();
@@ -123,9 +142,10 @@ export default function ReservationForm() {
           <p className="text-secondary text-sm mt-2">Patience 🧘‍♂️</p>
         </div>
       )}
+      <ToastContainer />
       <div className="flex flex-col justify-center w-full items-center md:justify-evenly gap-8 p-4">
         <form
-          onSubmit={handleBooking}
+          onSubmit={(e) => handleBooking(e, selectedRestaurant?._id)}
           className="flex flex-col justify-center items-center h-full w-4/5 m-12 p-6 bg-primary rounded-xl "
         >
           <div className="flex flex-col md:flex-row justify-center items-center gap-2 w-full">

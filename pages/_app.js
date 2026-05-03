@@ -9,11 +9,13 @@ import storage from "redux-persist/lib/storage";
 
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
-import user from "../reducers/user";
+import users from "../reducers/users";
+import bookings from "../reducers/bookings";
+import restaurants from "../reducers/restaurant";
 
-const reducers = combineReducers({ user });
+const reducers = combineReducers({ users, bookings, restaurants });
 
-const persistConfig = { key: "TemplateApp", storage };
+const persistConfig = { key: "RésaFacile", storage };
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
