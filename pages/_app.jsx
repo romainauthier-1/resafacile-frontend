@@ -1,6 +1,5 @@
 import "../styles/globals.css";
 import Head from "next/head";
-import { ToastContainer, toast } from "react-toastify";
 
 import { Provider } from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
@@ -46,7 +45,6 @@ function App({ Component, pageProps }) {
 
             <meta name="apple-mobile-web-app-title" content="RésaFacile" />
           </Head>
-          <ToastContainer />
           <Component {...pageProps} />
         </PersistGate>
       </Provider>

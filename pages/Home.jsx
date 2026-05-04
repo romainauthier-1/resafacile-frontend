@@ -105,7 +105,7 @@ export default function Home() {
             RÉSERVEZ VOTRE TABLE
           </h1>
         </div>
-        <div className="flex flex-row justify-evenly w-full items-center mt-4">
+        <div className="flex flex-row gap-6 justify-evenly w-full items-center mt-4 overflow-y-scroll no-scrollbar">
           {restaurantsButtons.length > 0 && restaurantsButtons}
         </div>
         <ReservationForm selectedRestaurant={selectedRestaurant} />

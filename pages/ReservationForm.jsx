@@ -148,10 +148,10 @@ export default function ReservationForm({ selectedRestaurant }) {
           onSubmit={(e) => handleBooking(e, selectedRestaurant?._id)}
           className="flex flex-col justify-center items-center h-full w-4/5 m-12 p-6 bg-primary rounded-xl "
         >
-          <div className="flex flex-col md:flex-row justify-center items-center gap-2 w-full">
-            <div className="w-full md:w-1/3 flex flex-col jusfify-evenly items-center">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-12 w-full">
+            <div className="w-full md:w-1/3 flex flex-col gap-4 jusfify-evenly items-center">
               <input
-                className="p-3 text-base border-b-2 rounded-lg mt-3 mb-3 w-full  outline-none text-secondary focus:border-secondary transition-colors"
+                className="text-secondary input rounded-md p-2 text-center"
                 placeholder="Prénom"
                 type="text"
                 enterKeyHint="next"
@@ -162,7 +162,7 @@ export default function ReservationForm({ selectedRestaurant }) {
                 autoCorrect="off"
               ></input>
               <input
-                className="p-3 text-base border-b-2 rounded-lg mt-3 mb-3 outline-none w-full text-secondary focus:border-secondary transition-colors"
+                className="text-secondary input rounded-md p-2 text-center"
                 placeholder="Nom de famille"
                 type="text"
                 enterKeyHint="next"
@@ -174,7 +174,7 @@ export default function ReservationForm({ selectedRestaurant }) {
                 autoCorrect="off"
               ></input>
               <input
-                className="p-3 text-base border-b-2 rounded-lg w-full mt-3 mb-3 outline-none text-secondary focus:border-secondary transition-colors"
+                className="text-secondary input rounded-md p-2 text-center"
                 placeholder="Adresse e-mail"
                 inputMode="email"
                 enterKeyHint="next"
@@ -186,7 +186,7 @@ export default function ReservationForm({ selectedRestaurant }) {
                 autoCapitalize="none"
               ></input>
               <input
-                className="p-3 text-base rounded-lg outline-none w-full mt-3 mb-3 focus:border-secondary transition-colors border-b-2 text-secondary"
+                className="text-secondary input rounded-md p-2"
                 placeholder="Numéro de téléphone"
                 type="tel"
                 enterKeyHint="next"
@@ -197,10 +197,10 @@ export default function ReservationForm({ selectedRestaurant }) {
                 autoCorrect="off"
               ></input>
             </div>
-            <div className="w-1/3 flex flex-col jusfify-evenly items-center">
+            <div className="w-1/3 flex flex-col gap-4 jusfify-evenly items-center">
               <input
-                className="p-3 text-base rounded-lg outline-none w-full mt-3 mb-3 focus:border-secondary transition-colors border-b-2 flex-1 text-secondary"
-                placeholder="Date de la réservation"
+                className="text-secondary input rounded-md p-2 text-center"
+                placeholder="Date"
                 type="date"
                 enterKeyHint="next"
                 ref={dateRef}
@@ -209,8 +209,8 @@ export default function ReservationForm({ selectedRestaurant }) {
                 value={date}
               ></input>
               <input
-                className="p-3 text-base rounded-lg outline-none w-full mt-3 mb-3 focus:border-secondary transition-colors border-b-2 flex-1 text-secondary"
-                placeholder="Heure de la réservation"
+                className="text-secondary input rounded-md p-2 text-center"
+                placeholder="Heure"
                 type="time"
                 enterKeyHint="next"
                 ref={timeRef}
@@ -219,9 +219,9 @@ export default function ReservationForm({ selectedRestaurant }) {
                 value={time}
               ></input>
               <input
-                className="p-3 text-base rounded-lg outline-none w-full mt-3 mb-3 focus:border-secondary transition-colors border-b-2 flex-1 text-secondary"
+                className="text-secondary input rounded-md p-2 text-center"
                 placeholder="Nombre de personnes"
-                type="number"
+                type="tel"
                 enterKeyHint="next"
                 ref={nbPaxRef}
                 onChange={(e) => setNbPax(e.target.value)}
@@ -229,7 +229,7 @@ export default function ReservationForm({ selectedRestaurant }) {
                 value={nbPax}
               ></input>
               <input
-                className="p-3 text-base rounded-lg outline-none w-full mt-3 mb-3 focus:border-secondary transition-colors border-b-2 flex-1 text-secondary"
+                className="text-secondary input rounded-md p-2 text-center"
                 placeholder="Occasion"
                 type="text"
                 enterKeyHint="go"
