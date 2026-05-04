@@ -86,13 +86,11 @@ export default function Modal({ onClose, isSignup }) {
     setEmail("");
     setPassword("");
     setOpeningDays([
-      "lundi",
       "mardi",
       "mercredi",
       "jeudi",
       "vendredi",
       "samedi",
-      "dimanche",
     ]);
     setServices([
       { name: "déjeuner", startTime: 720, endTime: 840, gap: 15 },
