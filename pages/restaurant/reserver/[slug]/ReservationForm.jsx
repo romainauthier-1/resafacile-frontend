@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { capitalize, colors } from "../components/utils";
+import { capitalize, colors } from "../../../../components/utils";
 
 import { useDispatch } from "react-redux";
-import { bookATable } from "../reducers/bookings";
+import { bookATable } from "../../../../reducers/bookings";
 
 import { Eye, EyeOff } from "lucide-react";
 

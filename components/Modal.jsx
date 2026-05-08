@@ -95,9 +95,17 @@ export default function Modal({ onClose, isSignup }) {
       "dimanche",
     ]);
     setServices([
-      { name: "déjeuner", startTime: 720, endTime: 840, gap: 15 },
-      { name: "dîner", startTime: 1140, endTime: 1320, gap: 30 },
+      { name: "déjeuner", startTime: "12:00", endTime: "14:00", gap: 15 },
+      { name: "dîner", startTime: "19:00", endTime: "22:00", gap: 30 },
     ]);
+  };
+
+  const resetInputsSoft = () => {
+    setName("");
+    setAddress("");
+    setCity("");
+    setZipCode("");
+    setPassword("");
   };
 
   const handleLogin = async () => {
@@ -125,7 +133,13 @@ export default function Modal({ onClose, isSignup }) {
 
       if (data.result) {
         toast.success(data.message);
-        dispatch(login({ _id: data.restaurantId, name: data.restaurantName }));
+        dispatch(
+          login({
+            _id: data.restaurantId,
+            name: data.restaurantName,
+            slug: data.restaurantSlug,
+          }),
+        );
         resetInputs();
         onClose();
       } else {
@@ -187,6 +201,13 @@ export default function Modal({ onClose, isSignup }) {
 
       if (data.result) {
         toast.success(data.message);
+        dispatch(
+          login({
+            _id: data.restaurantId,
+            name: data.restaurantName,
+            slug: data.restaurantSlug,
+          }),
+        );
         resetInputs();
         onClose();
       } else {
@@ -233,9 +254,9 @@ export default function Modal({ onClose, isSignup }) {
       getRestaurantInfos(siret);
     }
 
-    if (siret.length < 14) {
+    if (siret.length < 10) {
       setErrorMessage("");
-      resetInputs();
+      resetInputsSoft();
     }
   }, [siret]);
 

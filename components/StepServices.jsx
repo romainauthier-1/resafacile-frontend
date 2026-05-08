@@ -1,4 +1,4 @@
-import { capitalize } from "./utils";
+import { capitalize, convertMinutesToTime } from "./utils";
 import { Trash2 } from "lucide-react";
 
 export default function StepServices({ services, onUpdate, onAdd, onRemove }) {
@@ -26,7 +26,7 @@ export default function StepServices({ services, onUpdate, onAdd, onRemove }) {
               </button>
             )}
           </div>
-          <div className="flex flex-row justify-evenly items-center gap-3">
+          <div className="flex flex-row justify-evenly items-center gap-3  flex-wrap">
             <div className="flex flex-col gap-1 justify-center items-center">
               <label className="text-xs text-white">Début</label>
               <input
@@ -55,7 +55,7 @@ export default function StepServices({ services, onUpdate, onAdd, onRemove }) {
                 step="5"
                 value={service.gap}
                 onChange={(e) => onUpdate(i, "gap", Number(e.target.value))}
-                className="text-secondary p-2 input rounded-md"
+                className="text-secondary p-2 input rounded-md text-center"
               />
             </div>
           </div>

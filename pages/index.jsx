@@ -1,4 +1,4 @@
-import Home from "./Home";
+import Home from "./restaurant/reserver/[slug]/Home";
 
 function Index() {
   return <Home />;
