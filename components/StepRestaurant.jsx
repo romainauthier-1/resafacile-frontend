@@ -45,7 +45,7 @@ export default function StepRestaurant({
           className="text-secondary input rounded-md p-2"
         />
         <input
-          placeholder="+33"
+          placeholder="+336 12 34 56 78"
           type="tel"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
