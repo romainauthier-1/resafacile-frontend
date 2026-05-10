@@ -229,6 +229,7 @@ export default function ReservationForm({
           }
           className="flex flex-col justify-center items-center h-full w-4/5 m-12 p-6 bg-primary rounded-xl "
         >
+        {isUpdating && (
           <button
             type="button"
             onClick={() => onClose()}
@@ -237,6 +238,7 @@ export default function ReservationForm({
             <p className="text-white">Fermer</p>
             <X color="white" />
           </button>
+          )}
           <div className="flex flex-col md:flex-row justify-center items-center gap-12 w-full">
             <div className="w-full md:w-1/3 flex flex-col gap-4 jusfify-evenly items-center">
               <input
