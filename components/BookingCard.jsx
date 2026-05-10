@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import { Trash2, Pencil } from "lucide-react";
-import { colors } from "./utils";
+import { colors, capitalize } from "./utils";
 
-export default function BookingCard({ booking, onDelete }) {
+export default function BookingCard({ booking, onDelete, onUpdate }) {
   const dispatch = useDispatch();
 
   const dateOptions = {
@@ -19,23 +17,25 @@ export default function BookingCard({ booking, onDelete }) {
     minute: "2-digit",
   };
 
+  const occasion = booking.occasion;
+
   return (
-    <div className="bg-primaryLight rounded-xl shadow-xl m-6 p-6 flex flex-col h-52 w-64">
-      <div className="flex flex-row justify-between">
-        <Pencil
-          className="cursor-pointer hover:scale-110 transition-transform"
-          color={colors.secondary}
-        />
-        <h2 className="font-bold text-center p-2">{`${new Date(booking.dateTime).toLocaleDateString("fr-FR", dateOptions)} à ${new Date(booking.dateTime).toLocaleTimeString("fr-FR", hourOptions)}`}</h2>
-        <h2 className="font-bold text-center p-2">{`${booking.customer.firstName} ${booking.customer.lastName}`}</h2>
-        <Trash2
-          color={colors.primary}
-          onClick={onDelete}
-          className="cursor-pointer hover:scale-110 transition-transform"
-        />
-      </div>
+    <div className="bg-primaryLight rounded-xl shadow-xl m-6 p-6 flex flex-row justify-between items-center w-full">
+      <Pencil
+        className="cursor-pointer hover:scale-110 transition-transform"
+        color={colors.secondary}
+        onClick={onUpdate}
+      />
+      <h2 className="font-bold text-center p-2">{`${new Date(booking.dateTime).toLocaleTimeString("fr-FR", hourOptions)}`}</h2>
+      <h2 className="font-bold text-center p-2">{`${capitalize(booking.customer.firstName)} ${capitalize(booking.customer.lastName)}`}</h2>
       <p className="text-center p-2">{`${booking.nbPax} personnes`}</p>
       <p className="text-center p-2">{`Tél: ${booking.customer.phoneNumber}`}</p>
+      <p className="text-center p-2 italic">{occasion}</p>
+      <Trash2
+        color={colors.destructive}
+        onClick={onDelete}
+        className="cursor-pointer hover:scale-110 transition-transform"
+      />
     </div>
   );
 }

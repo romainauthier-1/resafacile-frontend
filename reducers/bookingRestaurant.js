@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  restaurant: null,
+  restaurant: {},
 };
 
 const bookingRestaurantSlice = createSlice({

@@ -3,25 +3,37 @@ import { useSelector, useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import BookingCard from "../components/BookingCard";
 import Modal from "../components/Modal";
+import ReservationForm from "./ReservationForm";
+import { colors } from "../components/utils";
 
 import { setBookings, bookATable, cancelATable } from "../reducers/bookings";
 import { logout } from "../reducers/connectedRestaurant";
 
-import { LogOut, CalendarSync } from "lucide-react";
+import {
+  LogOut,
+  CalendarSync,
+  CalendarPlus,
+  ChevronRight,
+  ChevronLeft,
+  CalendarCheck,
+} from "lucide-react";
 
 export default function LandingPage() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [bookingToUpdate, setBookingToUpdate] = useState(null);
+  const [currentStartDate, setCurrentStartDate] = useState(new Date());
 
-  const connectedRestaurant = useSelector(
-    (state) => state.connectedRestaurant.restaurant,
-  );
+  const connectedRestaurant =
+    useSelector((state) => state.connectedRestaurant?.restaurant) || {};
 
   const bookingList = useSelector((state) => state.bookings);
 
   const isRestaurantConnected = useSelector(
-    (state) => state.connectedRestaurant.isConnected,
+    (state) => state.connectedRestaurant?.isConnected,
   );
   const [isSignup, setIsSignup] = useState(false);
 
@@ -44,7 +56,7 @@ export default function LandingPage() {
     } catch (err) {
       console.error(err);
       toast.error(
-        data.message || "Une erreur est survenue au chargement de la page.",
+        err.message || "Une erreur est survenue au chargement de la page.",
       );
     } finally {
       setIsLoading(false);
@@ -53,20 +65,26 @@ export default function LandingPage() {
 
   const handleDeleteBooking = async (bookingId) => {
     try {
-      setIsLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/cancel/${bookingId}`,
-        {
-          method: "DELETE",
-          cache: "no-store",
-        },
-      );
-      const data = await response.json();
-      if (data.result) {
-        dispatch(cancelATable(bookingId));
-        toast.success(data.message);
+      if (
+        window.confirm("Êtes-vous sûr de vouloir supprimer cette réservation ?")
+      ) {
+        setIsLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/cancel/${bookingId}`,
+          {
+            method: "DELETE",
+            cache: "no-store",
+          },
+        );
+        const data = await response.json();
+        if (data.result) {
+          dispatch(cancelATable(bookingId));
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
       } else {
-        toast.error(data.message);
+        return;
       }
     } catch (err) {
       console.error(err);
@@ -77,14 +95,14 @@ export default function LandingPage() {
   };
 
   useEffect(() => {
-    if (isRestaurantConnected) {
+    if (isRestaurantConnected && connectedRestaurant._id) {
       getBookings(connectedRestaurant._id);
       console.log(
         `LISTE DES RÉSERVATIONS POUR LE RESTAURANT ${connectedRestaurant.name} :`,
       );
       console.log(bookingList);
     }
-  }, [connectedRestaurant, isRestaurantConnected]);
+  }, [connectedRestaurant, isRestaurantConnected, isUpdating]);
 
   const bookingDisplay = bookingList
     ?.toSorted((a, b) => a.dateTime > b.dateTime)
@@ -98,6 +116,101 @@ export default function LandingPage() {
       );
     });
 
+  const openingDays = connectedRestaurant?.openingDays || [];
+
+  const getNextSevenDays = (startDate = new Date()) => {
+    const days = {};
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      const dateString = date.toISOString().split("T")[0]; // Format YYYY-MM-DD
+      days[dateString] = [];
+    }
+    return days;
+  };
+
+  const groupedBookings = getNextSevenDays(currentStartDate);
+
+  const getNextWeek = () => {
+    const next = new Date(currentStartDate);
+    next.setDate(next.getDate() + 7);
+    setCurrentStartDate(next);
+  };
+
+  const getPreviousWeek = () => {
+    const prev = new Date(currentStartDate);
+    prev.setDate(prev.getDate() - 7);
+    setCurrentStartDate(prev);
+  };
+
+  bookingList.forEach((booking) => {
+    const dateKey = booking.dateTime.split("T")[0];
+    if (groupedBookings[dateKey]) {
+      groupedBookings[dateKey].push(booking);
+    }
+  });
+
+  const calendarDisplay = Object.keys(groupedBookings).map((date) => {
+    const dayBookings = groupedBookings[date];
+
+    const displayDate = new Date(date).toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+
+    const nbBookings = dayBookings.length;
+
+    const nbBookingPax = dayBookings.reduce(
+      (total, booking) => total + booking.nbPax,
+      0,
+    );
+
+    return (
+      <div
+        key={date}
+        className="w-full mb-8 p-4 border-l-4 border-primary bg-white shadow-sm rounded-r-xl"
+      >
+        <div className=" flex flex-row justify-between items-center w-full">
+          <h3 className="text-l font-bold text-secondary capitalize mb-4">
+            {displayDate}
+          </h3>
+          <p className="text-l text-secondary capitalize mb-4">
+            {" "}
+            {`${nbBookings} réservations | ${nbBookingPax} couverts`}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-4">
+          {dayBookings.length > 0 ? (
+            dayBookings.map((booking) => (
+              <BookingCard
+                key={booking._id}
+                booking={booking}
+                onDelete={() => handleDeleteBooking(booking._id)}
+                onUpdate={() => {
+                  setIsUpdating(true);
+                  setBookingToUpdate(booking);
+                }}
+              />
+            ))
+          ) : (
+            <p className="text-gray-400 italic">
+              Aucune réservation pour ce jour.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  });
+
+  if (isRestaurantConnected && !connectedRestaurant?._id) {
+    return (
+      <p>
+        Session expirée ou restaurant introuvable. Veuillez vous reconnecter.
+      </p>
+    );
+  }
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center"
@@ -132,31 +245,73 @@ export default function LandingPage() {
                   onClick={() => {
                     dispatch(logout());
                   }}
-                  className={`bg-destructive/60 text-white rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
+                  className={` text-destructive/60 rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
                 >
-                  <LogOut />
+                  <LogOut color={colors.destructive} />
                   <p>Déconnexion</p>
                 </button>
                 <button
                   onClick={() => {
                     getBookings(connectedRestaurant._id);
                   }}
-                  className={`bg-secondary/90 text-white rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
+                  className={` text-secondary rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
                 >
-                  <CalendarSync />
+                  <CalendarSync color={colors.secondary} />
                   <p>Rafraîchir</p>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsBooking(true);
+                  }}
+                  className={` text-background rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
+                >
+                  <CalendarPlus color={colors.background} />
+                  <p>Nouvelle réservation</p>
+                </button>
+              </div>
+              <div className="flex flex-row w-full justify-evenly m-4">
+                <button className="cursor-pointer hover:scale-110 transition-transform">
+                  <ChevronLeft onClick={getPreviousWeek} size={30} />
+                </button>
+                <button className="cursor-pointer hover:scale-110 transition-transform">
+                  <CalendarCheck
+                    onClick={() => setCurrentStartDate(new Date())}
+                    size={30}
+                  />
+                </button>
+                <button className="cursor-pointer hover:scale-110 transition-transform">
+                  <ChevronRight onClick={getNextWeek} size={30} />
                 </button>
               </div>
             </>
           )}
+          {isRestaurantConnected && isBooking && (
+            <ReservationForm
+              bookingRestaurant={connectedRestaurant}
+              onClose={() => setIsBooking(false)}
+            />
+          )}
+          {isRestaurantConnected && isUpdating && (
+            <ReservationForm
+              bookingRestaurant={connectedRestaurant}
+              onClose={() => {
+                setIsUpdating(false);
+                setBookingToUpdate(null);
+                getBookings(connectedRestaurant._id);
+              }}
+              isUpdating={isUpdating}
+              bookingToUpdate={bookingToUpdate}
+            />
+          )}
         </div>
         {isRestaurantConnected ? (
           bookingList.length > 0 ? (
-            <div className="flex flex-row flex-wrap gap-10">
-              {bookingDisplay}
+            <div className="flex flex-row flex-wrap">
+              {/* {bookingDisplay} */}
+              {calendarDisplay}
             </div>
           ) : (
-            <h2>Aucune réservation trouvée.</h2>
+            <h2>Pas de réservation pour le moment !</h2>
           )
         ) : (
           <>
@@ -185,17 +340,6 @@ export default function LandingPage() {
               >
                 <p>Inscription Restaurant</p>
               </button>
-              {isRestaurantConnected && (
-                <button
-                  onClick={() => {
-                    dispatch(logout());
-                  }}
-                  className={`bg-backgroundLight text-secondary rounded-full px-4 p-3 text-center hover:scale-105 transition-transform w-34`}
-                >
-                  <LogOut />
-                  <p>Déconnexion</p>
-                </button>
-              )}
             </div>
           </>
         )}

@@ -5,22 +5,29 @@ import { capitalize, colors } from "../components/utils";
 import { useDispatch } from "react-redux";
 import { bookATable } from "../reducers/bookings";
 
-import { Eye, EyeOff } from "lucide-react";
+import { X } from "lucide-react";
 
-export default function ReservationForm({ bookingRestaurant }) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("+33");
-  const [date, setDate] = useState(
-    new Date().toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }),
-  );
-  const [time, setTime] = useState("");
-  const [nbPax, setNbPax] = useState(2);
+export default function ReservationForm({
+  bookingRestaurant,
+  onClose,
+  isUpdating,
+  bookingToUpdate,
+}) {
+  const [firstName, setFirstName] = useState("Romain");
+  const [lastName, setLastName] = useState("Test");
+  const [email, setEmail] = useState("test@blabla.fr");
+  const [phoneNumber, setPhoneNumber] = useState("0699222819");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [time, setTime] = useState(() => {
+    if (bookingToUpdate) {
+      return bookingToUpdate.dateTime.split("T")[1].slice(0, 5);
+    }
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  });
+  const [nbPax, setNbPax] = useState(4);
   const [occasion, setOccasion] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +39,28 @@ export default function ReservationForm({ bookingRestaurant }) {
   const timeRef = useRef(null);
   const nbPaxRef = useRef(null);
   const occasionRef = useRef(null);
+
+  useEffect(() => {
+    if (isUpdating && bookingToUpdate) {
+      setFirstName(capitalize(bookingToUpdate.customer.firstName));
+      setLastName(capitalize(bookingToUpdate.customer.lastName));
+      setEmail(bookingToUpdate.customer.email);
+      setPhoneNumber(bookingToUpdate.customer.phoneNumber);
+
+      const localDate = new Date(bookingToUpdate.dateTime);
+      const year = localDate.getFullYear();
+      const month = (localDate.getMonth() + 1).toString().padStart(2, "0");
+      const day = localDate.getDate().toString().padStart(2, "0");
+      setDate(`${year}-${month}-${day}`);
+
+      const hours = localDate.getHours().toString().padStart(2, "0");
+      const minutes = localDate.getMinutes().toString().padStart(2, "0");
+      setTime(`${hours}:${minutes}`);
+
+      setNbPax(bookingToUpdate.nbPax);
+      setOccasion(bookingToUpdate.occasion || "");
+    }
+  }, [bookingToUpdate, isUpdating]);
 
   const dispatch = useDispatch();
 
@@ -59,13 +88,7 @@ export default function ReservationForm({ bookingRestaurant }) {
     setLastName("");
     setEmail("");
     setPhoneNumber("");
-    setDate(
-      new Date().toLocaleDateString("fr-FR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }),
-    );
+    setDate(new Date().toISOString().split("T")[0]);
     setTime("");
     setNbPax(2);
     setOccasion("");
@@ -79,7 +102,7 @@ export default function ReservationForm({ bookingRestaurant }) {
     try {
       setIsLoading(true);
 
-      const dateTime = `${date.split("/").reverse().join("-")}T${time}`;
+      const dateTime = `${date}T${time}`;
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/new/${restaurantId}`,
@@ -103,6 +126,7 @@ export default function ReservationForm({ bookingRestaurant }) {
         dispatch(bookATable(data.savedBooking));
         toast.success(data.message || "Réservation enregistrée !");
         resetInputs();
+        onClose();
       } else {
         setErrorMessage(
           data.message ||
@@ -112,6 +136,55 @@ export default function ReservationForm({ bookingRestaurant }) {
       }
     } catch (err) {
       console.error(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateBooking = async (e, bookingId) => {
+    e && e.preventDefault();
+    setErrorMessage("");
+    if (!validateBookingInputs()) return;
+
+    try {
+      setIsLoading(true);
+
+      const formattedUpdatedBooking = {
+        customer: {
+          firstName,
+          lastName,
+          email,
+          phoneNumber,
+        },
+        dateTime: `${date}T${time}`,
+        nbPax,
+        occasion,
+      };
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/update/${bookingId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            dateTime: `${date}T${time}`,
+            nbPax,
+            occasion,
+          }),
+        },
+      );
+      const data = await response.json();
+
+      if (data.result) {
+        toast.success(data.message);
+        onClose();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -144,9 +217,21 @@ export default function ReservationForm({ bookingRestaurant }) {
       )}
       <div className="flex flex-col justify-center w-full items-center md:justify-evenly gap-8 p-4">
         <form
-          onSubmit={(e) => handleBooking(e, bookingRestaurant?._id)}
+          onSubmit={(e) =>
+            isUpdating
+              ? handleUpdateBooking(e, bookingToUpdate._id)
+              : handleBooking(e, bookingRestaurant?._id)
+          }
           className="flex flex-col justify-center items-center h-full w-4/5 m-12 p-6 bg-primary rounded-xl "
         >
+          <button
+            type="button"
+            onClick={() => onClose()}
+            className="p-3 mb-3 bg-secondary flex flex-row justify-evenly items-center rounded-full hover:scale-110 transition-transform"
+          >
+            <p className="text-white">Fermer</p>
+            <X color="white" />
+          </button>
           <div className="flex flex-col md:flex-row justify-center items-center gap-12 w-full">
             <div className="w-full md:w-1/3 flex flex-col gap-4 jusfify-evenly items-center">
               <input
@@ -246,7 +331,9 @@ export default function ReservationForm({ bookingRestaurant }) {
             type="submit"
             className="p-3 mt-6 bg-secondary rounded-full w-40 hover:scale-110 transition-transform"
           >
-            <p className="text-white">Je réserve !</p>
+            <p className="text-white">
+              {isUpdating ? "Mettre à jour" : "Réserver"}
+            </p>
           </button>
         </form>
       </div>

@@ -24,7 +24,7 @@ export default function Modal({ onClose, isSignup }) {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("+33");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [openingDays, setOpeningDays] = useState([
     "mardi",
     "mercredi",
