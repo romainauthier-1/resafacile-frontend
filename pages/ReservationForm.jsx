@@ -80,13 +80,8 @@ export default function ReservationForm({
     } else if (!bookingRestaurant) {
       setErrorMessage("Veuillez sélectionner un restaurant.");
       return false;
-    } else if (time % bookingRestaurant.gap !== 0) {
-      console.log(bookingRestaurant);
-      bookingRestaurant.gap
-        ? setTimeError(
-            `Merci de sélectionner un créneau de ${bookingRestaurant.gap} minutes.`,
-          )
-        : setTimeError(`Merci de sélectionner un créneau de 15 minutes.`);
+    } else if (time % 15 !== 0) {
+      setTimeError(`Merci de sélectionner un créneau de 15 minutes.`);
       return false;
     }
     return true;
