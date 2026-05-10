@@ -32,19 +32,17 @@ export default function Modal({ onClose, isSignup }) {
     "vendredi",
     "samedi",
   ]);
+  const [gap, setGap] = useState(15);
 
   // Infos services
   const [services, setServices] = useState([
-    { name: "Déjeuner", startTime: "12:00", endTime: "14:00", gap: 15 },
-    { name: "Dîner", startTime: "19:00", endTime: "21:00", gap: 30 },
+    { name: "Déjeuner", startTime: "12:00", endTime: "14:00" },
+    { name: "Dîner", startTime: "19:00", endTime: "21:00" },
   ]);
 
   const addService = () => {
     if (services.length >= 4) return;
-    setServices([
-      ...services,
-      { name: "", startTime: "", endTime: "", gap: 15 },
-    ]);
+    setServices([...services, { name: "", startTime: "", endTime: "" }]);
   };
 
   const removeService = (index) => {
@@ -88,8 +86,8 @@ export default function Modal({ onClose, isSignup }) {
     setPassword("");
     setOpeningDays(["mardi", "mercredi", "jeudi", "vendredi", "samedi"]);
     setServices([
-      { name: "déjeuner", startTime: "12:00", endTime: "14:00", gap: 15 },
-      { name: "dîner", startTime: "19:00", endTime: "22:00", gap: 30 },
+      { name: "déjeuner", startTime: "12:00", endTime: "14:00" },
+      { name: "dîner", startTime: "19:00", endTime: "22:00" },
     ]);
   };
 
@@ -155,7 +153,8 @@ export default function Modal({ onClose, isSignup }) {
       !zipCode ||
       !phoneNumber ||
       !email ||
-      !password
+      !password ||
+      !gap
     ) {
       setErrorMessage("Tous les champs doivent être remplis.");
       return;
@@ -185,6 +184,7 @@ export default function Modal({ onClose, isSignup }) {
             password,
             phoneNumber,
             openingDays,
+            gap,
             services: servicesToDB,
           }),
         },
@@ -343,6 +343,8 @@ export default function Modal({ onClose, isSignup }) {
               setPhoneNumber={setPhoneNumber}
               openingDays={openingDays}
               setOpeningDays={setOpeningDays}
+              gap={gap}
+              setGap={setGap}
             />
           )}
           {isSignup && currentStep === 1 && (

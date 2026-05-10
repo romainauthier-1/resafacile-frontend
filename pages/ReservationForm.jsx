@@ -13,20 +13,21 @@ export default function ReservationForm({
   isUpdating,
   bookingToUpdate,
 }) {
-  const [firstName, setFirstName] = useState("Romain");
-  const [lastName, setLastName] = useState("Test");
-  const [email, setEmail] = useState("test@blabla.fr");
-  const [phoneNumber, setPhoneNumber] = useState("0699222819");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
   const [time, setTime] = useState(() => {
     if (bookingToUpdate) {
       return bookingToUpdate.dateTime.split("T")[1].slice(0, 5);
     }
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
   });
+  const [timeError, setTimeError] = useState("");
   const [nbPax, setNbPax] = useState(4);
   const [occasion, setOccasion] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -79,6 +80,14 @@ export default function ReservationForm({
     } else if (!bookingRestaurant) {
       setErrorMessage("Veuillez sélectionner un restaurant.");
       return false;
+    } else if (time % bookingRestaurant.gap !== 0) {
+      console.log(bookingRestaurant);
+      bookingRestaurant.gap
+        ? setTimeError(
+            `Merci de sélectionner un créneau de ${bookingRestaurant.gap} minutes.`,
+          )
+        : setTimeError(`Merci de sélectionner un créneau de 15 minutes.`);
+      return false;
     }
     return true;
   };
@@ -89,9 +98,10 @@ export default function ReservationForm({
     setEmail("");
     setPhoneNumber("");
     setDate(new Date().toISOString().split("T")[0]);
-    setTime("");
-    setNbPax(2);
+    setTime(`${hours}:${minutes}`);
+    setNbPax(4);
     setOccasion("");
+    setTimeError("");
   };
 
   const handleBooking = async (e, restaurantId) => {
@@ -302,6 +312,11 @@ export default function ReservationForm({
                 onKeyDown={(e) => handleKeyDown(e, nbPaxRef)}
                 value={time}
               ></input>
+              {timeError && (
+                <p className="text-white bg-destructive/70 rounded-lg p-2 text-center text-sm mt-2">
+                  {timeError}
+                </p>
+              )}
               <input
                 className="text-secondary input rounded-md p-2 text-center"
                 placeholder="Nombre de personnes"

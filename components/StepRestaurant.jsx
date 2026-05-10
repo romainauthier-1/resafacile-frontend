@@ -17,6 +17,8 @@ export default function StepRestaurant({
   setPhoneNumber,
   openingDays,
   setOpeningDays,
+  gap,
+  setGap,
 }) {
   const weekDays = [
     "lundi",
@@ -96,6 +98,19 @@ export default function StepRestaurant({
             {capitalize(day)}
           </button>
         ))}
+      </div>
+      <div className="flex flex-col gap-1 justify-center items-center">
+        <label className="text-xs text-white">
+          Écart entre chaque créneau (min)
+        </label>
+        <input
+          type="number"
+          min="5"
+          step="5"
+          value={gap}
+          onChange={(e) => setGap(Number(e.target.value))}
+          className="text-secondary p-2 input rounded-md text-center"
+        />
       </div>
     </div>
   );

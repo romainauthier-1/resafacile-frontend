@@ -78,7 +78,9 @@ export default function Home() {
             <h1 className=" font-sans  text-3xl md:text-5xl text-primary tracking-widest scale-120 md:scale-150 transform uppercase m-6">
               RÉSERVEZ VOTRE TABLE
             </h1>
-            <h2>{bookingRestaurant?.name}</h2>
+            <h2 className=" font-sans  text-xl md:text-5xl text-primary tracking-widest transform uppercase m-6">
+              {bookingRestaurant?.name}
+            </h2>
           </>
         </div>
         <div className="flex flex-row gap-6 justify-evenly w-full items-center mt-4 overflow-y-scroll no-scrollbar">
