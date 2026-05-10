@@ -8,11 +8,15 @@ import storage from "redux-persist/lib/storage";
 
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
-import users from "../reducers/users";
 import bookings from "../reducers/bookings";
-import restaurants from "../reducers/restaurant";
+import bookingRestaurant from "../reducers/bookingRestaurant";
+import connectedRestaurant from "../reducers/connectedRestaurant";
 
-const reducers = combineReducers({ users, bookings, restaurants });
+const reducers = combineReducers({
+  bookingRestaurant,
+  bookings,
+  connectedRestaurant,
+});
 
 const persistConfig = { key: "RésaFacile", storage };
 

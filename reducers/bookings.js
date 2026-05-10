@@ -1,31 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = [
-  {
-    customer: {
-      firstName: null,
-      lastName: null,
-      email: null,
-      phoneNumber: null,
-    },
-    dateTime: null,
-    nbPax: null,
-    occasion: null,
-    restaurant: null,
-  },
-];
+const initialState = [];
 const bookingSlice = createSlice({
   name: "bookings",
   initialState,
   reducers: {
     setBookings: (state, action) => {
-      state = action.payload;
+      return action.payload;
     },
     bookATable: (state, action) => {
       state.push(action.payload);
     },
     cancelATable: (state, action) => {
-      state = state.filter((resa) => resa._id !== action.payload);
+      return state.filter((resa) => resa._id !== action.payload);
     },
   },
 });

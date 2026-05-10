@@ -8,7 +8,8 @@ import StepServices from "./StepServices";
 import StepAccount from "./StepAccount";
 
 import { setBookings } from "../reducers/bookings";
-import { login, logout } from "../reducers/restaurant";
+import { login, logout } from "../reducers/connectedRestaurant";
+import { setBookingRestaurant } from "../reducers/bookingRestaurant";
 
 export default function Modal({ onClose, isSignup }) {
   const dispatch = useDispatch();
@@ -85,13 +86,7 @@ export default function Modal({ onClose, isSignup }) {
     setPhoneNumber("");
     setEmail("");
     setPassword("");
-    setOpeningDays([
-      "mardi",
-      "mercredi",
-      "jeudi",
-      "vendredi",
-      "samedi",
-    ]);
+    setOpeningDays(["mardi", "mercredi", "jeudi", "vendredi", "samedi"]);
     setServices([
       { name: "déjeuner", startTime: "12:00", endTime: "14:00", gap: 15 },
       { name: "dîner", startTime: "19:00", endTime: "22:00", gap: 30 },

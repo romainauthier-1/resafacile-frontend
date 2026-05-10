@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { Trash2, Pencil } from "lucide-react";
 import { colors } from "./utils";
 
-export default function BookingCard({ booking }) {
+export default function BookingCard({ booking, onDelete }) {
   const dispatch = useDispatch();
 
   const dateOptions = {
@@ -30,6 +30,7 @@ export default function BookingCard({ booking }) {
         <h2 className="font-bold text-center p-2">{`${booking.customer.firstName} ${booking.customer.lastName}`}</h2>
         <Trash2
           color={colors.primary}
+          onClick={onDelete}
           className="cursor-pointer hover:scale-110 transition-transform"
         />
       </div>

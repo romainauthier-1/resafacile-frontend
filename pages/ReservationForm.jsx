@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { capitalize, colors } from "../../../../components/utils";
+import { capitalize, colors } from "../components/utils";
 
 import { useDispatch } from "react-redux";
-import { bookATable } from "../../../../reducers/bookings";
+import { bookATable } from "../reducers/bookings";
 
 import { Eye, EyeOff } from "lucide-react";
 
-export default function ReservationForm({ selectedRestaurant }) {
+export default function ReservationForm({ bookingRestaurant }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -47,7 +47,7 @@ export default function ReservationForm({ selectedRestaurant }) {
     ) {
       setErrorMessage("Tous les champs doivent être remplis.");
       return false;
-    } else if (!selectedRestaurant) {
+    } else if (!bookingRestaurant) {
       setErrorMessage("Veuillez sélectionner un restaurant.");
       return false;
     }
@@ -120,7 +120,7 @@ export default function ReservationForm({ selectedRestaurant }) {
   const handleKeyDown = (e, nextField) => {
     if (e.key === "Enter" && !nextField) {
       e.preventDefault();
-      handleBooking(e, selectedRestaurant._id);
+      handleBooking(e, bookingRestaurant._id);
     }
     if (e.key === "Enter") {
       e.preventDefault();
@@ -142,10 +142,9 @@ export default function ReservationForm({ selectedRestaurant }) {
           <p className="text-secondary text-sm mt-2">Patience 🧘‍♂️</p>
         </div>
       )}
-      <ToastContainer />
       <div className="flex flex-col justify-center w-full items-center md:justify-evenly gap-8 p-4">
         <form
-          onSubmit={(e) => handleBooking(e, selectedRestaurant?._id)}
+          onSubmit={(e) => handleBooking(e, bookingRestaurant?._id)}
           className="flex flex-col justify-center items-center h-full w-4/5 m-12 p-6 bg-primary rounded-xl "
         >
           <div className="flex flex-col md:flex-row justify-center items-center gap-12 w-full">
