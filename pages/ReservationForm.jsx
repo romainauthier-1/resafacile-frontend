@@ -34,7 +34,7 @@ export default function ReservationForm({
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [sendMessage, setSendMessage] = useState(false);
+  const [sendMessage, setSendMessage] = useState(true);
 
   const lastNameRef = useRef(null);
   const emailRef = useRef(null);
@@ -116,6 +116,17 @@ export default function ReservationForm({
   const handleBooking = async (e, restaurantId, sendMessage) => {
     e && e.preventDefault();
     setErrorMessage("");
+
+    const effectiveRestaurantId =
+      restaurantId || bookingRestaurant?._id || connectedRestaurant?._id;
+
+    if (!effectiveRestaurantId) {
+      setErrorMessage(
+        "Impossible de retrouver le restaurant pour cette réservation.",
+      );
+      return;
+    }
+
     if (!validateBookingInputs()) return;
 
     try {
@@ -124,7 +135,7 @@ export default function ReservationForm({
       const dateTime = `${date}T${time}`;
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/new/${restaurantId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/new/${effectiveRestaurantId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -204,7 +215,7 @@ export default function ReservationForm({
   const handleKeyDown = (e, nextField) => {
     if (e.key === "Enter" && !nextField) {
       e.preventDefault();
-      handleBooking(e, bookingRestaurant._id);
+      handleBooking(e, bookingRestaurant?._id || connectedRestaurant?._id);
     }
     if (e.key === "Enter") {
       e.preventDefault();
@@ -216,7 +227,7 @@ export default function ReservationForm({
   };
 
   return (
-    <div className="flex flex-col w-screen">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       {isLoading && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center backdrop-blur-md rounded-3xl">
           <div className="w-16 h-16 border-4 border-t-primary border-white/20 rounded-full animate-spin mb-4"></div>
@@ -226,149 +237,154 @@ export default function ReservationForm({
           <p className="text-secondary text-sm mt-2">Patience 🧘‍♂️</p>
         </div>
       )}
-      <div className="flex flex-col justify-center w-full items-center md:justify-evenly gap-8 p-4">
-        <form
-          onSubmit={(e) =>
-            isUpdating
-              ? handleUpdateBooking(e, bookingToUpdate._id, sendMessage)
-              : handleBooking(e, connectedRestaurant?._id, sendMessage)
-          }
-          className="flex flex-col justify-center items-center h-full w-4/5 m-12 p-6 bg-primary rounded-xl "
-        >
-          {(connectedRestaurant || bookingRestaurant) && (
-            <button
-              type="button"
-              onClick={() => onClose()}
-              className="p-3 mb-3 bg-secondary flex flex-row justify-evenly items-center rounded-full hover:scale-110 transition-transform"
-            >
-              <p className="text-white">Fermer</p>
-              <X color="white" />
-            </button>
-          )}
-          <div className="flex flex-col md:flex-row justify-center items-center gap-12 w-full">
-            <div className="w-full md:w-1/3 flex flex-col gap-4 jusfify-evenly items-center">
-              <input
-                className="text-secondary input rounded-md p-2 text-center"
-                placeholder="Prénom"
-                type="text"
-                enterKeyHint="next"
-                onChange={(e) => setFirstName(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
-                value={firstName}
-                autoCapitalize="words"
-                autoCorrect="off"
-              ></input>
-              <input
-                className="text-secondary input rounded-md p-2 text-center"
-                placeholder="Nom de famille"
-                type="text"
-                enterKeyHint="next"
-                ref={lastNameRef}
-                onKeyDown={(e) => handleKeyDown(e, emailRef)}
-                onChange={(e) => setLastName(e.target.value)}
-                value={lastName}
-                autoCapitalize="words"
-                autoCorrect="off"
-              ></input>
-              <input
-                className="text-secondary input rounded-md p-2 text-center"
-                placeholder="Adresse e-mail"
-                inputMode="email"
-                enterKeyHint="next"
-                ref={emailRef}
-                onKeyDown={(e) => handleKeyDown(e, phoneNumberRef)}
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
-                autoCorrect="off"
-                autoCapitalize="none"
-              ></input>
-              <input
-                className="text-secondary input rounded-md p-2"
-                placeholder="Numéro de téléphone"
-                type="tel"
-                enterKeyHint="next"
-                ref={phoneNumberRef}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, dateRef)}
-                value={phoneNumber}
-                autoCorrect="off"
-              ></input>
-            </div>
-            <div className="w-1/3 flex flex-col gap-4 jusfify-evenly items-center">
-              <input
-                className="text-secondary input rounded-md p-2 text-center"
-                placeholder="Date"
-                type="date"
-                enterKeyHint="next"
-                ref={dateRef}
-                onChange={(e) => setDate(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, timeRef)}
-                value={date}
-              ></input>
-              <input
-                className="text-secondary input rounded-md p-2 text-center"
-                placeholder="Heure"
-                type="time"
-                enterKeyHint="next"
-                ref={timeRef}
-                onChange={(e) => setTime(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, nbPaxRef)}
-                value={time}
-              ></input>
-              {timeError && (
-                <p className="text-white bg-destructive/70 rounded-lg p-2 text-center text-sm mt-2">
-                  {timeError}
-                </p>
-              )}
-              <input
-                className="text-secondary input rounded-md p-2 text-center"
-                placeholder="Nombre de personnes"
-                type="tel"
-                enterKeyHint="next"
-                ref={nbPaxRef}
-                onChange={(e) => setNbPax(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, occasionRef)}
-                value={nbPax}
-              ></input>
-              <input
-                className="text-secondary input rounded-md p-2 text-center"
-                placeholder="Occasion"
-                type="text"
-                enterKeyHint="go"
-                ref={occasionRef}
-                onChange={(e) => setOccasion(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, null)}
-                value={occasion}
-              ></input>
-            </div>
+      <form
+        onSubmit={(e) =>
+          isUpdating
+            ? handleUpdateBooking(e, bookingToUpdate._id, sendMessage)
+            : handleBooking(
+                e,
+                bookingRestaurant?._id || connectedRestaurant?._id,
+                sendMessage,
+              )
+        }
+        className="w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 panel-card"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-slate-900">
+            {isUpdating ? "Modifier la réservation" : "Nouvelle réservation"}
+          </h2>
+          <button
+            type="button"
+            onClick={() => onClose()}
+            className="btn-tertiary p-1.5 hover:text-slate-600 flex-shrink-0"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <div className="flex flex-col gap-4 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              className="field-input text-slate-900 text-center text-base"
+              placeholder="Prénom"
+              type="text"
+              enterKeyHint="next"
+              onChange={(e) => setFirstName(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
+              value={firstName}
+              autoCapitalize="words"
+              autoCorrect="off"
+            />
+            <input
+              className="field-input text-slate-900 text-center text-base"
+              placeholder="Nom de famille"
+              type="text"
+              enterKeyHint="next"
+              ref={lastNameRef}
+              onKeyDown={(e) => handleKeyDown(e, emailRef)}
+              onChange={(e) => setLastName(e.target.value)}
+              value={lastName}
+              autoCapitalize="words"
+              autoCorrect="off"
+            />
+            <input
+              className="field-input text-slate-900 text-center text-base md:col-span-2"
+              placeholder="Adresse e-mail"
+              inputMode="email"
+              enterKeyHint="next"
+              ref={emailRef}
+              onKeyDown={(e) => handleKeyDown(e, phoneNumberRef)}
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              autoCorrect="off"
+              autoCapitalize="none"
+            />
+            <input
+              className="field-input text-slate-900 text-base md:col-span-2"
+              placeholder="Numéro de téléphone"
+              type="tel"
+              enterKeyHint="next"
+              ref={phoneNumberRef}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, dateRef)}
+              value={phoneNumber}
+              autoCorrect="off"
+            />
           </div>
-          {connectedRestaurant && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              className="field-input text-slate-900 text-center text-base"
+              placeholder="Date"
+              type="date"
+              enterKeyHint="next"
+              ref={dateRef}
+              onChange={(e) => setDate(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, timeRef)}
+              value={date}
+            />
+            <input
+              className="field-input text-slate-900 text-center text-base"
+              placeholder="Heure"
+              type="time"
+              enterKeyHint="next"
+              ref={timeRef}
+              onChange={(e) => setTime(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, nbPaxRef)}
+              value={time}
+            />
+            <input
+              className="field-input text-slate-900 text-center text-base"
+              placeholder="Nombre de personnes"
+              type="tel"
+              enterKeyHint="next"
+              ref={nbPaxRef}
+              onChange={(e) => setNbPax(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, occasionRef)}
+              value={nbPax}
+            />
+            <input
+              className="field-input text-slate-900 text-center text-base"
+              placeholder="Occasion"
+              type="text"
+              enterKeyHint="go"
+              ref={occasionRef}
+              onChange={(e) => setOccasion(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, null)}
+              value={occasion}
+            />
+          </div>
+          {timeError && (
+            <p className="text-red-600 bg-red-50 border border-red-200 rounded-lg p-2 text-center text-xs">
+              {timeError}
+            </p>
+          )}
+          {connectedRestaurant?._id && (
             <button
               type="button"
-              onClick={() => setSendMessage(!sendMessage)}
-              className={`p-3 mt-3  rounded-full text-xs border-2 transition-all w-1/2
-              ${
+              onClick={() => {
+                setSendMessage(!sendMessage);
+              }}
+              className={`px-4 py-3 text-base rounded-full font-medium transition-all w-full ${
                 sendMessage
-                  ? "bg-secondary text-white border-secondary"
-                  : "border-white text-white"
+                  ? "bg-secondary text-white shadow-md"
+                  : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
               }`}
             >
-              Envoyer SMS
+              {sendMessage ? "Avec SMS" : "Pas de SMS"}
             </button>
           )}
           {errorMessage && (
-            <p className="text-destructive text-sm mt-2">{errorMessage}</p>
+            <p className="text-red-600 bg-red-50 border border-red-200 rounded-lg p-2 text-center text-xs">
+              {errorMessage}
+            </p>
           )}
           <button
             type="submit"
-            className="p-3 mt-6 bg-secondary rounded-full w-40 hover:scale-110 transition-transform"
+            className="btn-primary px-6 py-3 text-base w-full"
           >
-            <p className="text-white">
-              {isUpdating ? "Mettre à jour" : "Réserver"}
-            </p>
+            {isUpdating ? "Mettre à jour" : "Réserver"}
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }

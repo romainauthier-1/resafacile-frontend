@@ -65,7 +65,7 @@ export default function Modal({ onClose, isSignup }) {
     if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     } else {
-      isSignup ? handleSignup() : handleLogin();
+      handleSignup();
     }
   };
 
@@ -249,17 +249,17 @@ export default function Modal({ onClose, isSignup }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-backgroundLight backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-xl bg-primary">
+      <div className="relative w-full max-w-2xl rounded-[var(--radius)] overflow-hidden shadow-[var(--shadow)] bg-[var(--surface)] border border-[var(--border)]">
         {/* Header */}
         <div className="flex justify-between items-center p-6 pb-0">
-          <h2 className="text-lg font-medium text-white">
+          <h2 className="text-lg font-medium text-[var(--text)]">
             {isSignup ? "Créer votre restaurant" : "Connexion"}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-full hover:scale-110 transition-transform w-8 h-8 flex items-center justify-center border border-white/20 hover:bg-white/10"
+            className="btn-tertiary p-1.5 hover:text-[var(--restaurant-primary)] flex-shrink-0"
           >
-            <X size={18} color={"white"} />
+            <X size={18} color={"black"} />
           </button>
         </div>
 
@@ -276,10 +276,10 @@ export default function Modal({ onClose, isSignup }) {
                     className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-all 
                     ${
                       i < currentStep
-                        ? "bg-green-200/90 text-secondary"
+                        ? "bg-green-200 text-[var(--restaurant-secondary)]"
                         : i === currentStep
-                          ? "bg-secondary text-white"
-                          : "border border-lightGray text-lightGray"
+                          ? "bg-[var(--restaurant-secondary)] text-[var(--surface-strong)]"
+                          : "border border-[var(--border)] text-[var(--muted)]"
                     }`}
                   >
                     {i < currentStep ? "✓" : i + 1}
@@ -288,10 +288,10 @@ export default function Modal({ onClose, isSignup }) {
                     className={`text-xs font-medium
                     ${
                       i < currentStep
-                        ? "text-white"
+                        ? "text-[var(--restaurant-secondary)]"
                         : i === currentStep
-                          ? "text-white"
-                          : "text-lightGray"
+                          ? "text-[var(--restaurant-secondary)]"
+                          : "text-[var(--muted)]"
                     }`}
                   >
                     {label}
@@ -299,7 +299,7 @@ export default function Modal({ onClose, isSignup }) {
                 </div>
                 {i < steps.length - 1 && (
                   <div
-                    className={`flex-1 h-px ${i < currentStep ? "bg-white" : "bg-lightGray"}`}
+                    className={`flex-1 h-px ${i < currentStep ? "bg-[var(--restaurant-secondary)]" : "bg-[var(--border)]"}`}
                   />
                 )}
               </Fragment>
@@ -319,7 +319,6 @@ export default function Modal({ onClose, isSignup }) {
               isPasswordVisible={isPasswordVisible}
               setIsPasswordVisible={setIsPasswordVisible}
               handleLogin={handleLogin}
-              handleSignup={handleSignup}
             />
           )}
           {isSignup && currentStep === 0 && (
@@ -358,6 +357,8 @@ export default function Modal({ onClose, isSignup }) {
               setPassword={setPassword}
               isPasswordVisible={isPasswordVisible}
               setIsPasswordVisible={setIsPasswordVisible}
+              handleSignup={handleSignup}
+              isSignup={isSignup}
             />
           )}
 
@@ -367,21 +368,21 @@ export default function Modal({ onClose, isSignup }) {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center px-6 py-4 border-t border-white/10">
+        <div className="flex justify-between items-center px-6 py-4 border-t border-[var(--border)]">
           <button
             onClick={handleBack}
             className={
               currentStep === 0 || !isSignup
                 ? "invisible"
-                : "text-sm text-white hover:scale-110 transition-transform"
+                : "text-sm text-[var(--text)] hover:scale-110 transition-transform"
             }
           >
             ← Retour
           </button>
           <button
-            onClick={handleNext}
+            onClick={isSignup ? handleNext : handleLogin}
             disabled={isLoading}
-            className="bg-secondary text-white px-6 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform disabled:opacity-50"
+            className="btn-primary px-6 py-2 text-sm disabled:opacity-50"
           >
             {isLoading
               ? "..."

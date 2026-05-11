@@ -34,3 +34,13 @@ export const convertMinutesToTime = (minutes) => {
     .toString()
     .padStart(2, "0")}`;
 };
+
+export const weekDays = [
+  "lundi",
+  "mardi",
+  "mercredi",
+  "jeudi",
+  "vendredi",
+  "samedi",
+  "dimanche",
+];

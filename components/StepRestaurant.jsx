@@ -58,7 +58,7 @@ export default function StepRestaurant({
           ref={siretRef}
           onSubmit={() => phoneNumberRef.current?.focus()}
           onChange={(e) => setSiret(e.target.value)}
-          className="text-secondary input rounded-md p-2"
+          className="field-input text-slate-900"
         />
         <input
           placeholder="06 12 34 56 78"
@@ -69,7 +69,7 @@ export default function StepRestaurant({
           ref={phoneNumberRef}
           onSubmit={() => nameRef.current?.focus()}
           onChange={(e) => setPhoneNumber(e.target.value)}
-          className="text-secondary input rounded-md p-2"
+          className="field-input text-slate-900"
         />
         <input
           placeholder="Nom du restaurant"
@@ -79,7 +79,7 @@ export default function StepRestaurant({
           ref={nameRef}
           onSubmit={() => addressRef.current?.focus()}
           onChange={(e) => setName(e.target.value)}
-          className="text-secondary input col-span-2 rounded-md p-2"
+          className="field-input text-slate-900 col-span-2"
         />
         <input
           placeholder="Adresse"
@@ -89,7 +89,7 @@ export default function StepRestaurant({
           ref={addressRef}
           onSubmit={() => zipCodeRef.current?.focus()}
           onChange={(e) => setAddress(e.target.value)}
-          className="text-secondary input col-span-2 rounded-md p-2"
+          className="field-input text-slate-900 col-span-2"
         />
         <input
           placeholder="Code Postal"
@@ -102,7 +102,7 @@ export default function StepRestaurant({
           ref={zipCodeRef}
           onSubmit={() => cityRef.current?.focus()}
           onChange={(e) => setZipCode(e.target.value)}
-          className="text-secondary input rounded-md p-2"
+          className="field-input text-slate-900"
         />
         <input
           placeholder="Ville"
@@ -111,11 +111,11 @@ export default function StepRestaurant({
           ref={cityRef}
           onSubmit={() => gapRef.current?.focus()}
           onChange={(e) => setCity(e.target.value)}
-          className="text-secondary input rounded-md p-2"
+          className="field-input text-slate-900"
         />
       </div>
 
-      <p className="text-l text-center font-bold text-white">
+      <p className="text-l text-center font-bold text-[var(--text)]">
         Jours d'ouverture
       </p>
       <div className="flex flex-wrap gap-2 justify-center">
@@ -124,11 +124,11 @@ export default function StepRestaurant({
             key={day}
             type="button"
             onClick={() => toggleDay(day)}
-            className={`px-3 py-1 rounded-full text-xs border transition-all
+            className={`btn-secondary px-4 py-2 text-sm transition-all
               ${
                 openingDays.includes(day)
-                  ? "bg-secondary text-white border-secondary"
-                  : "border-white text-white"
+                  ? "bg-[var(--restaurant-secondary)] text-white border-[var(--restaurant-secondary)]"
+                  : ""
               }`}
           >
             {capitalize(day)}
@@ -136,7 +136,7 @@ export default function StepRestaurant({
         ))}
       </div>
       <div className="flex flex-col gap-1 justify-center items-center">
-        <label className="text-xs text-white">
+        <label className="text-xs text-[var(--text)]">
           Écart entre chaque créneau (min)
         </label>
         <input
@@ -147,7 +147,7 @@ export default function StepRestaurant({
           returnKeyType="next"
           ref={gapRef}
           onChange={(e) => setGap(Number(e.target.value))}
-          className="text-secondary p-2 input rounded-md text-center"
+          className="field-input text-slate-900 text-center"
         />
       </div>
     </div>

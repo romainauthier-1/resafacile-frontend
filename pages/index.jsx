@@ -32,8 +32,9 @@ export default function LandingPage() {
   const [bookingToUpdate, setBookingToUpdate] = useState(null);
   const [currentStartDate, setCurrentStartDate] = useState(new Date());
 
-  const connectedRestaurant =
-    useSelector((state) => state.connectedRestaurant?.restaurant) || {};
+  const connectedRestaurant = useSelector(
+    (state) => state.connectedRestaurant?.restaurant,
+  );
 
   const bookingList = useSelector((state) => state.bookings);
 
@@ -223,10 +224,7 @@ export default function LandingPage() {
       ).length === 0;
 
     return (
-      <div
-        key={date}
-        className="w-full mb-8 p-4 border-l-4 border-primary bg-white shadow-sm rounded-r-xl"
-      >
+      <div key={date} className="panel-card p-6 mb-8">
         <div className=" flex flex-row justify-between items-center w-full">
           <h3 className="text-l font-bold text-secondary capitalize mb-4">
             {displayDate}
@@ -295,7 +293,7 @@ export default function LandingPage() {
   }
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center"
+      className="page-shell"
       style={{
         backgroundColor: isModalOpen
           ? "rgba(0, 0, 0, 0.5)"
@@ -312,81 +310,93 @@ export default function LandingPage() {
         </div>
       )}
       <ToastContainer />
-      <main className="flex flex-col content-center h-full w-full justify-center items-center overflow-hidden">
-        <div className="flex flex-col justify-center items-center">
-          {isRestaurantConnected && (
-            <>
-              <h1 className=" font-sans  text-3xl md:text-5xl text-primary tracking-widest scale-120 md:scale-150 transform uppercase m-6">
-                {connectedRestaurant.name}
-              </h1>
-              <h2 className=" font-sans  text-xl md:text-5xl text-primary tracking-widest transform uppercase m-6">
-                Liste des réservations
-              </h2>
-              <div className="flex flex-row w-full justify-evenly">
+      <main className="w-full max-w-6xl">
+        {isRestaurantConnected && (
+          <>
+            <div className="panel-card p-8 md:p-10 mb-8 space-y-8">
+              <div className="text-center space-y-4">
+                <h1 className="section-title">{connectedRestaurant.name}</h1>
+                <h2 className="text-2xl md:text-4xl font-semibold text-slate-900">
+                  Liste des réservations
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-4 justify-center items-center">
                 <button
                   onClick={() => {
                     dispatch(logout());
                     dispatch(setBookings([]));
                   }}
-                  className={` text-destructive/60 rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
+                  className="btn-tertiary px-5 py-3 text-destructive/70 hover:text-destructive"
                 >
-                  <LogOut color={colors.destructive} />
-                  <p>Déconnexion</p>
+                  <div className="flex flex-col items-center gap-1">
+                    <LogOut color={colors.destructive} />
+                    <p>Déconnexion</p>
+                  </div>
                 </button>
                 <button
                   onClick={() => {
                     getBookings(connectedRestaurant._id);
                   }}
-                  className={` text-secondary rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
+                  className="btn-secondary px-5 py-3"
                 >
-                  <CalendarSync color={colors.secondary} />
-                  <p>Rafraîchir</p>
+                  <div className="flex flex-col items-center gap-1">
+                    <CalendarSync color={colors.secondary} />
+                    <p>Rafraîchir</p>
+                  </div>
                 </button>
                 <button
                   onClick={() => {
                     setIsBooking(true);
                   }}
-                  className={` text-background rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
+                  className="btn-primary px-5 py-3"
                 >
-                  <CalendarPlus color={colors.background} />
-                  <p>Nouvelle réservation</p>
+                  <div className="flex flex-col items-center gap-1">
+                    <CalendarPlus color="white" />
+                    <p>Nouvelle réservation</p>
+                  </div>
                 </button>
               </div>
-              <div className="flex flex-row w-full justify-evenly m-4">
-                <button className="cursor-pointer hover:scale-110 transition-transform">
-                  <ChevronLeft onClick={getPreviousWeek} size={30} />
+              <div className="flex flex-row items-center justify-center gap-4">
+                <button
+                  className="btn-secondary p-3 flex items-center justify-center"
+                  onClick={getPreviousWeek}
+                >
+                  <ChevronLeft size={24} />
                 </button>
-                <button className="cursor-pointer hover:scale-110 transition-transform">
-                  <CalendarCheck
-                    onClick={() => setCurrentStartDate(new Date())}
-                    size={30}
-                  />
+                <button
+                  className="btn-secondary p-3 flex items-center justify-center"
+                  onClick={() => setCurrentStartDate(new Date())}
+                >
+                  <CalendarCheck size={24} />
                 </button>
-                <button className="cursor-pointer hover:scale-110 transition-transform">
-                  <ChevronRight onClick={getNextWeek} size={30} />
+                <button
+                  className="btn-secondary p-3 flex items-center justify-center"
+                  onClick={getNextWeek}
+                >
+                  <ChevronRight size={24} />
                 </button>
               </div>
-            </>
-          )}
-          {isRestaurantConnected && isBooking && (
-            <ReservationForm
-              connectedRestaurant={connectedRestaurant}
-              onClose={() => setIsBooking(false)}
-            />
-          )}
-          {isRestaurantConnected && isUpdating && (
-            <ReservationForm
-              bookingRestaurant={connectedRestaurant}
-              onClose={() => {
-                setIsUpdating(false);
-                setBookingToUpdate(null);
-                getBookings(connectedRestaurant._id);
-              }}
-              isUpdating={isUpdating}
-              bookingToUpdate={bookingToUpdate}
-            />
-          )}
-        </div>
+            </div>
+          </>
+        )}
+        {isRestaurantConnected && isBooking && (
+          <ReservationForm
+            connectedRestaurant={connectedRestaurant}
+            onClose={() => setIsBooking(false)}
+          />
+        )}
+        {isRestaurantConnected && isUpdating && (
+          <ReservationForm
+            connectedRestaurant={connectedRestaurant}
+            onClose={() => {
+              setIsUpdating(false);
+              setBookingToUpdate(null);
+              getBookings(connectedRestaurant._id);
+            }}
+            isUpdating={isUpdating}
+            bookingToUpdate={bookingToUpdate}
+          />
+        )}
         {isRestaurantConnected ? (
           bookingList.length > 0 ? (
             <div className="flex flex-col w-full">
@@ -404,25 +414,36 @@ export default function LandingPage() {
                 isSignup={isSignup}
               />
             )}
-            <div className="mt-10 flex flex-row justify-center items-center gap-10">
-              <button
-                onClick={() => {
-                  setIsModalOpen(true);
-                  setIsSignup(false);
-                }}
-                className={`bg-backgroundLight text-secondary rounded-full px-4 p-3 text-center hover:scale-105 transition-transform w-34`}
-              >
-                <p>Connexion Restaurant</p>
-              </button>
-              <button
-                onClick={() => {
-                  setIsModalOpen(true);
-                  setIsSignup(true);
-                }}
-                className={`bg-backgroundLight text-secondary rounded-full px-4 p-3 text-center hover:scale-105 transition-transform w-34`}
-              >
-                <p>Inscription Restaurant</p>
-              </button>
+            <div className="text-center space-y-8">
+              <div className="space-y-4">
+                <h1 className="section-title text-4xl md:text-6xl">
+                  RésaFacile
+                </h1>
+                <p className="section-subtitle text-lg md:text-xl max-w-2xl mx-auto">
+                  La solution simple et efficace pour gérer vos réservations de
+                  restaurant
+                </p>
+              </div>
+              <div className="flex flex-row justify-center items-center gap-6">
+                <button
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setIsSignup(false);
+                  }}
+                  className="btn-secondary px-6 py-3"
+                >
+                  Connexion Restaurant
+                </button>
+                <button
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setIsSignup(true);
+                  }}
+                  className="btn-primary px-6 py-3"
+                >
+                  Inscription Restaurant
+                </button>
+              </div>
             </div>
           </>
         )}

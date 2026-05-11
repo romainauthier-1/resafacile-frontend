@@ -25,11 +25,11 @@ export default function StepAccount({
         returnKeyType="next"
         onSubmit={(e) => passwordRef.current?.focus()}
         onChange={(e) => setEmail(e.target.value)}
-        className="text-secondary p-2 input rounded-md"
+        className="field-input text-slate-900"
         autoCapitalize="none"
         autoCorrect="off"
       />
-      <div className="flex flex-row items-center bg-white rounded-md">
+      <div className="flex flex-row items-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-strong)]">
         <input
           placeholder="Mot de passe"
           type={isPasswordVisible ? "text" : "password"}
@@ -38,14 +38,14 @@ export default function StepAccount({
           onChange={(e) => setPassword(e.target.value)}
           onSubmit={(e) => (isSignup ? handleSignup(e) : handleLogin(e))}
           returnKeyType="go"
-          className="text-secondary p-2 input rounded-md flex-1"
+          className="text-[var(--text)] p-3 flex-1 border-none focus:ring-0 bg-transparent"
         />
         <button
           type="button"
           onClick={() => setIsPasswordVisible((visibility) => !visibility)}
-          className="text-secondary hover:text-secondaryLight p-2"
+          className="text-slate-500 hover:text-slate-700 p-3"
         >
-          {isPasswordVisible ? <EyeOff size={25} /> : <Eye size={25} />}
+          {isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>
       </div>
     </div>

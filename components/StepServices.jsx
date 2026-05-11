@@ -7,14 +7,14 @@ export default function StepServices({ services, onUpdate, onAdd, onRemove }) {
       {services.map((service, i) => (
         <div
           key={i}
-          className="border border-white/90 rounded-xl p-4 flex flex-col gap-3"
+          className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-6 flex flex-col gap-4"
         >
           <div className="flex justify-between gap-20 items-center">
             <input
               placeholder="Nom du service"
               value={capitalize(service.name)}
               onChange={(e) => onUpdate(i, "name", e.target.value)}
-              className="text-secondary p-2 flex-1 input w-40 font-medium rounded-md"
+              className="field-input text-slate-900 flex-1 font-medium"
             />
             {services.length > 1 && (
               <button
@@ -28,21 +28,21 @@ export default function StepServices({ services, onUpdate, onAdd, onRemove }) {
           </div>
           <div className="flex flex-row justify-evenly items-center gap-3  flex-wrap">
             <div className="flex flex-col gap-1 justify-center items-center">
-              <label className="text-xs text-white">Début</label>
+              <label className="text-xs text-[var(--text)]">Début</label>
               <input
                 type="time"
                 value={service.startTime}
                 onChange={(e) => onUpdate(i, "startTime", e.target.value)}
-                className="text-secondary p-2 input rounded-md "
+                className="field-input text-slate-900"
               />
             </div>
             <div className="flex flex-col gap-1 justify-center items-center">
-              <label className="text-xs text-white">Fin</label>
+              <label className="text-xs text-[var(--text)]">Fin</label>
               <input
                 type="time"
                 value={service.endTime}
                 onChange={(e) => onUpdate(i, "endTime", e.target.value)}
-                className="text-secondary p-2 input rounded-md"
+                className="field-input text-slate-900"
               />
             </div>
           </div>
@@ -52,7 +52,7 @@ export default function StepServices({ services, onUpdate, onAdd, onRemove }) {
         <button
           type="button"
           onClick={onAdd}
-          className="text-sm text-white border border-dashed border-white rounded-xl py-2 hover:text-secondaryLight hover:border-secondaryLight hover:scale-105 transition-all"
+          className="btn-secondary px-4 py-3 text-sm w-full"
         >
           + Ajouter un service
         </button>
