@@ -36,6 +36,14 @@ export default function StepRestaurant({
     );
   };
 
+  const siretRef = useRef(null);
+  const nameRef = useRef(null);
+  const addressRef = useRef(null);
+  const cityRef = useRef(null);
+  const zipCodeRef = useRef(null);
+  const phoneNumberRef = useRef(null);
+  const gapRef = useRef(null);
+
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-3">
@@ -43,37 +51,65 @@ export default function StepRestaurant({
           placeholder="N° SIRET"
           type="number"
           value={siret}
+          maxLength={14}
+          minLength={14}
+          required
+          returnKeyType="next"
+          ref={siretRef}
+          onSubmit={() => phoneNumberRef.current?.focus()}
           onChange={(e) => setSiret(e.target.value)}
           className="text-secondary input rounded-md p-2"
         />
         <input
           placeholder="06 12 34 56 78"
           type="tel"
+          required
           value={phoneNumber}
+          returnKeyType="next"
+          ref={phoneNumberRef}
+          onSubmit={() => nameRef.current?.focus()}
           onChange={(e) => setPhoneNumber(e.target.value)}
           className="text-secondary input rounded-md p-2"
         />
         <input
           placeholder="Nom du restaurant"
           value={name}
+          required
+          returnKeyType="next"
+          ref={nameRef}
+          onSubmit={() => addressRef.current?.focus()}
           onChange={(e) => setName(e.target.value)}
           className="text-secondary input col-span-2 rounded-md p-2"
         />
         <input
           placeholder="Adresse"
           value={address}
+          required
+          returnKeyType="next"
+          ref={addressRef}
+          onSubmit={() => zipCodeRef.current?.focus()}
           onChange={(e) => setAddress(e.target.value)}
           className="text-secondary input col-span-2 rounded-md p-2"
         />
         <input
           placeholder="Code Postal"
           value={zipCode}
+          type="number"
+          maxLength={5}
+          minLength={5}
+          required
+          returnKeyType="next"
+          ref={zipCodeRef}
+          onSubmit={() => cityRef.current?.focus()}
           onChange={(e) => setZipCode(e.target.value)}
           className="text-secondary input rounded-md p-2"
         />
         <input
           placeholder="Ville"
           value={city}
+          returnKeyType="next"
+          ref={cityRef}
+          onSubmit={() => gapRef.current?.focus()}
           onChange={(e) => setCity(e.target.value)}
           className="text-secondary input rounded-md p-2"
         />
@@ -108,6 +144,8 @@ export default function StepRestaurant({
           min="5"
           step="5"
           value={gap}
+          returnKeyType="next"
+          ref={gapRef}
           onChange={(e) => setGap(Number(e.target.value))}
           className="text-secondary p-2 input rounded-md text-center"
         />

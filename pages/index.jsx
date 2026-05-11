@@ -7,7 +7,10 @@ import ReservationForm from "./ReservationForm";
 import { colors } from "../components/utils";
 
 import { setBookings, bookATable, cancelATable } from "../reducers/bookings";
-import { logout } from "../reducers/connectedRestaurant";
+import {
+  logout,
+  updateServicesForTheDay,
+} from "../reducers/connectedRestaurant";
 
 import {
   LogOut,
@@ -16,6 +19,8 @@ import {
   ChevronRight,
   ChevronLeft,
   CalendarCheck,
+  Lock,
+  LockOpen,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -104,20 +109,6 @@ export default function LandingPage() {
     }
   }, [connectedRestaurant, isRestaurantConnected, isUpdating]);
 
-  const bookingDisplay = bookingList
-    ?.toSorted((a, b) => a.dateTime > b.dateTime)
-    .map((booking) => {
-      return (
-        <BookingCard
-          key={booking._id}
-          booking={booking}
-          onDelete={() => handleDeleteBooking(booking._id)}
-        />
-      );
-    });
-
-  const openingDays = connectedRestaurant?.openingDays || [];
-
   const getNextSevenDays = (startDate = new Date()) => {
     const days = {};
     for (let i = 0; i < 7; i++) {
@@ -143,8 +134,8 @@ export default function LandingPage() {
     setCurrentStartDate(prev);
   };
 
-  bookingList.forEach((booking) => {
-    const dateKey = booking.dateTime.split("T")[0];
+  bookingList?.forEach((booking) => {
+    const dateKey = booking?.dateTime?.split("T")[0];
     if (groupedBookings[dateKey]) {
       groupedBookings[dateKey].push(booking);
     }
@@ -166,6 +157,71 @@ export default function LandingPage() {
       0,
     );
 
+    const closeBookingsForTheDay = async () => {
+      setIsLoading(true);
+      for (let i = 0; i < connectedRestaurant?.services.length; i++) {
+        const service = connectedRestaurant.services[i];
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/restaurants/service/close-date/${connectedRestaurant._id}`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                serviceId: service._id,
+                date: new Date(date).toISOString().split("T")[0],
+              }),
+            },
+          );
+          const data = await response.json();
+
+          if (data.result) {
+            toast.success(data.message);
+            dispatch(updateServicesForTheDay(data.services));
+            getBookings(connectedRestaurant._id);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    const openBookingsForTheDay = async () => {
+      setIsLoading(true);
+      for (let i = 0; i < connectedRestaurant?.services.length; i++) {
+        const service = connectedRestaurant.services[i];
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/restaurants/service/open-date/${connectedRestaurant._id}`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                serviceId: service._id,
+                date: new Date(date).toISOString().split("T")[0],
+              }),
+            },
+          );
+          const data = await response.json();
+
+          if (data.result) {
+            toast.success(data.message);
+            dispatch(updateServicesForTheDay(data.services));
+            getBookings(connectedRestaurant._id);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    const isBookingOpenForTheDay =
+      connectedRestaurant?.services?.filter((service) =>
+        service.closedDates.includes(new Date(date).toISOString()),
+      ).length === 0;
+
     return (
       <div
         key={date}
@@ -179,6 +235,21 @@ export default function LandingPage() {
             {" "}
             {`${nbBookings} réservations | ${nbBookingPax} couverts`}
           </p>
+          {isBookingOpenForTheDay ? (
+            <button
+              className="text-l text-destructive/60 mb-4"
+              onClick={() => closeBookingsForTheDay()}
+            >
+              <LockOpen />
+            </button>
+          ) : (
+            <button
+              className="text-l text-secondary/60 mb-4"
+              onClick={() => openBookingsForTheDay()}
+            >
+              <Lock />
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-4">
@@ -203,6 +274,11 @@ export default function LandingPage() {
       </div>
     );
   });
+
+  useEffect(() => {
+    setIsBooking(false);
+    setIsUpdating(false);
+  }, []);
 
   if (isRestaurantConnected && !connectedRestaurant?._id) {
     return (

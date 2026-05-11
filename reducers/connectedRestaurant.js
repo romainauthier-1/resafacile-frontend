@@ -17,8 +17,12 @@ const connectedRestaurantSlice = createSlice({
       state.restaurant = null;
       state.isConnected = false;
     },
+    updateServicesForTheDay: (state, action) => {
+      state.restaurant.services = action.payload;
+    },
   },
 });
 
-export const { login, logout } = connectedRestaurantSlice.actions;
+export const { login, logout, updateServicesForTheDay } =
+  connectedRestaurantSlice.actions;
 export default connectedRestaurantSlice.reducer;

@@ -2,15 +2,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
-import BookingCard from "../components/BookingCard";
 import Modal from "../components/Modal";
 import ReservationForm from "./ReservationForm";
+import { capitalize, convertMinutesToTime } from "../components/utils";
 
-import { setBookings } from "../reducers/bookings";
-import { login, logout } from "../reducers/connectedRestaurant";
 import { setBookingRestaurant } from "../reducers/bookingRestaurant";
-
-import { LogOut } from "lucide-react";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -75,12 +71,53 @@ export default function Home() {
       >
         <div className="flex flex-col justify-center items-center">
           <>
-            <h1 className=" font-sans  text-3xl md:text-5xl text-primary tracking-widest scale-120 md:scale-150 transform uppercase m-6">
+            <h1 className=" font-sans  text-2xl md:text-3xl text-primary tracking-widest scale-120 md:scale-150 transform uppercase m-6">
               RÉSERVEZ VOTRE TABLE
             </h1>
-            <h2 className=" font-sans  text-xl md:text-5xl text-primary tracking-widest transform uppercase m-6">
+            <h2 className="font-sans text-xl md:text-2xl text-primary tracking-widest transform uppercase m-3">
               {bookingRestaurant?.name}
             </h2>
+            <p className="font-sans text-background tracking-widest transform uppercase m-2">
+              {bookingRestaurant?.address}
+            </p>
+            <p className="font-sans text-background tracking-widest transform uppercase m-2">
+              {bookingRestaurant?.zipCode} {bookingRestaurant?.city}
+            </p>
+            <p className="font-sans text-background tracking-widest transform uppercase m-2">
+              📲 {bookingRestaurant?.phoneNumber.replace("+33", "0")}
+            </p>
+            <div className="flex flex-row w-full justify-evenly items-center">
+              <p className="font-sans text-background tracking-widest transform uppercase m-2">
+                Jours d'ouverture :
+              </p>
+              {bookingRestaurant?.openingDays.map((day) => {
+                return (
+                  <p className="font-sans text-background tracking-widest transform uppercase m-2">
+                    {capitalize(day)}
+                  </p>
+                );
+              })}
+            </div>
+            <div className="flex flex-row w-full justify-evenly items-center">
+              <p className="font-sans text-background tracking-widest transform uppercase m-2">
+                Horaires d'accueil :
+              </p>
+              {bookingRestaurant?.services.map((service) => {
+                return (
+                  <>
+                    <p className="font-sans text-background tracking-widest transform uppercase m-2">
+                      {capitalize(service.name)}
+                    </p>
+                    <p className="font-sans text-background tracking-widest transform uppercase m-2">
+                      {convertMinutesToTime(service.startTime)}
+                    </p>
+                    <p className="font-sans text-background tracking-widest transform uppercase m-2">
+                      {convertMinutesToTime(service.endTime)}
+                    </p>
+                  </>
+                );
+              })}
+            </div>
           </>
         </div>
         <div className="flex flex-row gap-6 justify-evenly w-full items-center mt-4 overflow-y-scroll no-scrollbar"></div>

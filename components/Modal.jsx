@@ -7,9 +7,7 @@ import StepRestaurant from "./StepRestaurant";
 import StepServices from "./StepServices";
 import StepAccount from "./StepAccount";
 
-import { setBookings } from "../reducers/bookings";
 import { login, logout } from "../reducers/connectedRestaurant";
-import { setBookingRestaurant } from "../reducers/bookingRestaurant";
 
 export default function Modal({ onClose, isSignup }) {
   const dispatch = useDispatch();
@@ -99,7 +97,10 @@ export default function Modal({ onClose, isSignup }) {
     setPassword("");
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e && e.preventDefault();
+    setErrorMessage("");
+
     if (!email || !password) {
       setErrorMessage("Tous les champs doivent être remplis.");
       return;
@@ -124,13 +125,7 @@ export default function Modal({ onClose, isSignup }) {
 
       if (data.result) {
         toast.success(data.message);
-        dispatch(
-          login({
-            _id: data.restaurantId,
-            name: data.restaurantName,
-            slug: data.restaurantSlug,
-          }),
-        );
+        dispatch(login(data.restaurant));
         resetInputs();
         onClose();
       } else {
@@ -144,7 +139,10 @@ export default function Modal({ onClose, isSignup }) {
     }
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (e) => {
+    e && e.preventDefault();
+    setErrorMessage("");
+
     if (
       !siret ||
       !name ||
@@ -194,13 +192,7 @@ export default function Modal({ onClose, isSignup }) {
 
       if (data.result) {
         toast.success(data.message);
-        dispatch(
-          login({
-            _id: data.restaurantId,
-            name: data.restaurantName,
-            slug: data.restaurantSlug,
-          }),
-        );
+        dispatch(login(data.restaurant));
         resetInputs();
         onClose();
       } else {
@@ -319,12 +311,15 @@ export default function Modal({ onClose, isSignup }) {
         <div className="p-6">
           {!isSignup && (
             <StepAccount
+              isSignup={isSignup}
               email={email}
               setEmail={setEmail}
               password={password}
               setPassword={setPassword}
               isPasswordVisible={isPasswordVisible}
               setIsPasswordVisible={setIsPasswordVisible}
+              handleLogin={handleLogin}
+              handleSignup={handleSignup}
             />
           )}
           {isSignup && currentStep === 0 && (

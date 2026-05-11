@@ -82,9 +82,20 @@ export default function ReservationForm({
     ) {
       setErrorMessage("Tous les champs doivent être remplis.");
       return false;
-    } else if (time.split(":")[1] % 15 !== 0) {
-      setTimeError(`Merci de sélectionner un créneau de 15 minutes.`);
-      return false;
+    } else if (bookingRestaurant) {
+      if (time.split(":")[1] % bookingRestaurant.gap !== 0) {
+        setTimeError(
+          `Merci de sélectionner un créneau de ${bookingRestaurant.gap} minutes.`,
+        );
+        return false;
+      }
+    } else if (connectedRestaurant) {
+      if (time.split(":")[1] % connectedRestaurant.gap !== 0) {
+        setTimeError(
+          `Merci de sélectionner un créneau de ${connectedRestaurant.gap} minutes.`,
+        );
+        return false;
+      }
     }
     return true;
   };
@@ -203,11 +214,6 @@ export default function ReservationForm({
     }
   };
 
-  useEffect(() => {
-    console.log("sendMessage MOFIDIÉ :", sendMessage);
-    console.log("RESTAURANT (booking): ", bookingRestaurant);
-    console.log("RESTAURANT (connected): ", connectedRestaurant);
-  }, [sendMessage]);
   return (
     <div className="flex flex-col w-screen">
       {isLoading && (
@@ -335,18 +341,20 @@ export default function ReservationForm({
               ></input>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setSendMessage(!sendMessage)}
-            className={`p-3 mt-3  rounded-full text-xs border-2 transition-all w-1/2
+          {connectedRestaurant && (
+            <button
+              type="button"
+              onClick={() => setSendMessage(!sendMessage)}
+              className={`p-3 mt-3  rounded-full text-xs border-2 transition-all w-1/2
               ${
                 sendMessage
                   ? "bg-secondary text-white border-secondary"
                   : "border-white text-white"
               }`}
-          >
-            Envoyer SMS
-          </button>
+            >
+              Envoyer SMS
+            </button>
+          )}
           {errorMessage && (
             <p className="text-destructive text-sm mt-2">{errorMessage}</p>
           )}
