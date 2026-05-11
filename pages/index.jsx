@@ -320,6 +320,7 @@ export default function LandingPage() {
                 <button
                   onClick={() => {
                     dispatch(logout());
+                    dispatch(setBookings([]));
                   }}
                   className={` text-destructive/60 rounded-full px-4 p-3 text-center hover:scale-105 flex flex-col justify-center items-center transition-transform w-34`}
                 >
