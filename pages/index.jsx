@@ -287,7 +287,7 @@ export default function LandingPage() {
           )}
           {isRestaurantConnected && isBooking && (
             <ReservationForm
-              bookingRestaurant={connectedRestaurant}
+              connectedRestaurant={connectedRestaurant}
               onClose={() => setIsBooking(false)}
             />
           )}

@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 
 export default function ReservationForm({
   bookingRestaurant,
+  connectedRestaurant,
   onClose,
   isUpdating,
   bookingToUpdate,
@@ -32,6 +33,8 @@ export default function ReservationForm({
   const [occasion, setOccasion] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [sendMessage, setSendMessage] = useState(false);
 
   const lastNameRef = useRef(null);
   const emailRef = useRef(null);
@@ -66,6 +69,8 @@ export default function ReservationForm({
   const dispatch = useDispatch();
 
   const validateBookingInputs = () => {
+    setErrorMessage("");
+    setTimeError("");
     if (
       !firstName ||
       !lastName ||
@@ -77,10 +82,7 @@ export default function ReservationForm({
     ) {
       setErrorMessage("Tous les champs doivent être remplis.");
       return false;
-    } else if (!bookingRestaurant) {
-      setErrorMessage("Veuillez sélectionner un restaurant.");
-      return false;
-    } else if (time % 15 !== 0) {
+    } else if (time.split(":")[1] % 15 !== 0) {
       setTimeError(`Merci de sélectionner un créneau de 15 minutes.`);
       return false;
     }
@@ -97,9 +99,10 @@ export default function ReservationForm({
     setNbPax(4);
     setOccasion("");
     setTimeError("");
+    setSendMessage(false);
   };
 
-  const handleBooking = async (e, restaurantId) => {
+  const handleBooking = async (e, restaurantId, sendMessage) => {
     e && e.preventDefault();
     setErrorMessage("");
     if (!validateBookingInputs()) return;
@@ -122,6 +125,7 @@ export default function ReservationForm({
             dateTime,
             nbPax,
             occasion,
+            sendMessage,
           }),
         },
       );
@@ -146,7 +150,7 @@ export default function ReservationForm({
     }
   };
 
-  const handleUpdateBooking = async (e, bookingId) => {
+  const handleUpdateBooking = async (e, bookingId, sendMessage) => {
     e && e.preventDefault();
     setErrorMessage("");
     if (!validateBookingInputs()) return;
@@ -154,17 +158,6 @@ export default function ReservationForm({
     try {
       setIsLoading(true);
 
-      const formattedUpdatedBooking = {
-        customer: {
-          firstName,
-          lastName,
-          email,
-          phoneNumber,
-        },
-        dateTime: `${date}T${time}`,
-        nbPax,
-        occasion,
-      };
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/update/${bookingId}`,
         {
@@ -178,6 +171,7 @@ export default function ReservationForm({
             dateTime: `${date}T${time}`,
             nbPax,
             occasion,
+            sendMessage,
           }),
         },
       );
@@ -209,6 +203,11 @@ export default function ReservationForm({
     }
   };
 
+  useEffect(() => {
+    console.log("sendMessage MOFIDIÉ :", sendMessage);
+    console.log("RESTAURANT (booking): ", bookingRestaurant);
+    console.log("RESTAURANT (connected): ", connectedRestaurant);
+  }, [sendMessage]);
   return (
     <div className="flex flex-col w-screen">
       {isLoading && (
@@ -224,20 +223,20 @@ export default function ReservationForm({
         <form
           onSubmit={(e) =>
             isUpdating
-              ? handleUpdateBooking(e, bookingToUpdate._id)
-              : handleBooking(e, bookingRestaurant?._id)
+              ? handleUpdateBooking(e, bookingToUpdate._id, sendMessage)
+              : handleBooking(e, connectedRestaurant?._id, sendMessage)
           }
           className="flex flex-col justify-center items-center h-full w-4/5 m-12 p-6 bg-primary rounded-xl "
         >
-        {isUpdating && (
-          <button
-            type="button"
-            onClick={() => onClose()}
-            className="p-3 mb-3 bg-secondary flex flex-row justify-evenly items-center rounded-full hover:scale-110 transition-transform"
-          >
-            <p className="text-white">Fermer</p>
-            <X color="white" />
-          </button>
+          {(connectedRestaurant || bookingRestaurant) && (
+            <button
+              type="button"
+              onClick={() => onClose()}
+              className="p-3 mb-3 bg-secondary flex flex-row justify-evenly items-center rounded-full hover:scale-110 transition-transform"
+            >
+              <p className="text-white">Fermer</p>
+              <X color="white" />
+            </button>
           )}
           <div className="flex flex-col md:flex-row justify-center items-center gap-12 w-full">
             <div className="w-full md:w-1/3 flex flex-col gap-4 jusfify-evenly items-center">
@@ -336,6 +335,18 @@ export default function ReservationForm({
               ></input>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setSendMessage(!sendMessage)}
+            className={`p-3 mt-3  rounded-full text-xs border-2 transition-all w-1/2
+              ${
+                sendMessage
+                  ? "bg-secondary text-white border-secondary"
+                  : "border-white text-white"
+              }`}
+          >
+            Envoyer SMS
+          </button>
           {errorMessage && (
             <p className="text-destructive text-sm mt-2">{errorMessage}</p>
           )}

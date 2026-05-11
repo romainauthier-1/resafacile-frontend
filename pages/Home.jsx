@@ -83,9 +83,7 @@ export default function Home() {
             </h2>
           </>
         </div>
-        <div className="flex flex-row gap-6 justify-evenly w-full items-center mt-4 overflow-y-scroll no-scrollbar">
-          {/* {restaurantsButtons.length > 0 && restaurantsButtons} */}
-        </div>
+        <div className="flex flex-row gap-6 justify-evenly w-full items-center mt-4 overflow-y-scroll no-scrollbar"></div>
         <ReservationForm bookingRestaurant={bookingRestaurant} />
         {isModalOpen && (
           <Modal onClose={() => setIsModalOpen(false)} isSignup={isSignup} />
