@@ -252,7 +252,7 @@ export default function LandingPage() {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-col w-full gap-2">
           {dayBookings.length > 0 ? (
             dayBookings.map((booking) => (
               <BookingCard
@@ -382,7 +382,7 @@ export default function LandingPage() {
         </div>
         {isRestaurantConnected ? (
           bookingList.length > 0 ? (
-            <div className="flex flex-row flex-wrap">
+            <div className="flex flex-col w-full">
               {/* {bookingDisplay} */}
               {calendarDisplay}
             </div>

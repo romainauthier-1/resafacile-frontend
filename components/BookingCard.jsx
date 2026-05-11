@@ -20,7 +20,7 @@ export default function BookingCard({ booking, onDelete, onUpdate }) {
   const occasion = booking.occasion;
 
   return (
-    <div className="bg-primaryLight rounded-xl shadow-xl m-6 p-6 flex flex-row justify-between items-center w-full">
+    <div className="bg-primaryLight rounded-xl shadow-xl p-2 flex flex-col md:flex-row justify-between items-center w-full">
       <Pencil
         className="cursor-pointer hover:scale-110 transition-transform"
         color={colors.secondary}
