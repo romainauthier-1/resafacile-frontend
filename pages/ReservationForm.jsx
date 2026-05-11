@@ -190,6 +190,7 @@ export default function ReservationForm({
 
       if (data.result) {
         toast.success(data.message);
+        resetInputs();
         onClose();
       }
     } catch (err) {

@@ -254,17 +254,23 @@ export default function LandingPage() {
 
         <div className="flex flex-col w-full gap-2">
           {dayBookings.length > 0 ? (
-            dayBookings.map((booking) => (
-              <BookingCard
-                key={booking._id}
-                booking={booking}
-                onDelete={() => handleDeleteBooking(booking._id)}
-                onUpdate={() => {
-                  setIsUpdating(true);
-                  setBookingToUpdate(booking);
-                }}
-              />
-            ))
+            dayBookings
+              .toSorted(
+                (a, b) =>
+                  new Date(a.dateTime).getTime() -
+                  new Date(b.dateTime).getTime(),
+              )
+              .map((booking) => (
+                <BookingCard
+                  key={booking._id}
+                  booking={booking}
+                  onDelete={() => handleDeleteBooking(booking._id)}
+                  onUpdate={() => {
+                    setIsUpdating(true);
+                    setBookingToUpdate(booking);
+                  }}
+                />
+              ))
           ) : (
             <p className="text-gray-400 italic">
               Aucune réservation pour ce jour.
