@@ -1,7 +1,8 @@
 {
-  "name": "nextjs-template",
+  "name": "resafacile-frontend",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "yarn@4.9.2",
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",

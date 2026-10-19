@@ -1010,24 +1010,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nextjs-template@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "nextjs-template@workspace:."
-  dependencies:
-    "@reduxjs/toolkit": "npm:^2.11.2"
-    autoprefixer: "npm:^10.5.0"
-    lucide-react: "npm:^1.7.0"
-    next: "npm:12.1.6"
-    postcss: "npm:^8.5.6"
-    react: "npm:18.1.0"
-    react-dom: "npm:18.1.0"
-    react-redux: "npm:^9.2.0"
-    react-toastify: "npm:^11.0.5"
-    redux-persist: "npm:^6.0.0"
-    tailwindcss: "npm:3.4"
-  languageName: unknown
-  linkType: soft
-
 "node-gyp@npm:latest":
   version: 12.2.0
   resolution: "node-gyp@npm:12.2.0"
@@ -1351,6 +1333,24 @@ __metadata:
   checksum: 10c0/b10c28357194f38e7d53b760ed5e64faa317cc63de1fb95bc5d9e127fab956392344368c357b8e7a9bedb0c35b111e7efa522210cfdc3b3c75e5074718e9069c
   languageName: node
   linkType: hard
+
+"resafacile-frontend@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "resafacile-frontend@workspace:."
+  dependencies:
+    "@reduxjs/toolkit": "npm:^2.11.2"
+    autoprefixer: "npm:^10.5.0"
+    lucide-react: "npm:^1.7.0"
+    next: "npm:12.1.6"
+    postcss: "npm:^8.5.6"
+    react: "npm:18.1.0"
+    react-dom: "npm:18.1.0"
+    react-redux: "npm:^9.2.0"
+    react-toastify: "npm:^11.0.5"
+    redux-persist: "npm:^6.0.0"
+    tailwindcss: "npm:3.4"
+  languageName: unknown
+  linkType: soft
 
 "reselect@npm:^5.1.0":
   version: 5.1.1
